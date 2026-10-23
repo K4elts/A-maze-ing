@@ -4,7 +4,7 @@ PYTHON := python3
 VENV := .venv
 BIN := $(VENV)/bin
 PIP := $(BIN)/pip
-APP := main.py
+APP := a_maze_ing.py
 SRC := .
 
 # Install dependencies
@@ -12,7 +12,6 @@ install:
 	$(PYTHON) -m venv $(VENV)
 	$(PIP) install --upgrade pip
 	$(PIP) install -r requirements.txt
-	$(PIP) install flake8 mypy
 
 # Runs the application
 run:
@@ -31,8 +30,7 @@ clean:
 # Comprobar estilo y tipos
 lint:
 	$(BIN)/flake8 $(SRC)
-	$(BIN)/mypy $(SRC) --warn-return-any --warn-unused-ignores
-	--ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	$(BIN)/mypy $(SRC) --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 lint-strict:
 	$(BIN)/flake8 $(SRC)
