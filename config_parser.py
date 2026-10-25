@@ -39,3 +39,16 @@ class MazeParameters(BaseModel):
         if self.ENTRY == self.EXIT:
             raise ValueError("ENTRY and EXIT must be different")
         return self
+
+
+def read_config(path: str) -> dict[str, str]:
+    """Read the config file and return its KEY=VALUE pairs as text."""
+    data: dict[str, str] = {}
+    with open(path, encoding="utf-8") as file:
+        for line in file:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            key, value = line.split("=", 1)
+            data[key.strip()] = value.strip()
+    return data
