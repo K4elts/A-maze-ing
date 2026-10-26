@@ -1,15 +1,19 @@
 '''READS AND VALIDATES CONFIG.TXT'''
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel, ConfigDict, Field, field_validator, model_validator
+)
 
 
 class MazeParameters(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
     WIDTH: int = Field(..., ge=1)
     HEIGHT: int = Field(..., ge=1)
     ENTRY: tuple[int, int] = Field(...)
     EXIT: tuple[int, int] = Field(...)
-    OUTPUT_FILE: str = Field(...)
+    OUTPUT_FILE: str = Field(..., min_length=1)
     PERFECT: bool = Field(...)
     SEED: Optional[int] = Field(None)
 
