@@ -24,41 +24,41 @@ OPPOSITE = {
 
 
 class MazeGenerator:
-    def __init__(self, width: int, height: int):
-        self.width: int = width
+    def __init__(self, height: int, width: int):
         self.height: int = height
+        self.width: int = width
         self.maze: list[list[int]] = [
-            [ALL_WALLS for _ in range(width)]
-            for _ in range(height)
+            [ALL_WALLS for _ in range(height)]
+            for _ in range(width)
         ]
 
     def generate(self) -> list[list[int]]:
         # marca todas las celdas como falso
         visited = [
-            [False for _ in range(self.width)]
-            for _ in range(self.height)
+            [False for _ in range(self.height)]
+            for _ in range(self.width)
         ]
         stack = [(0, 0)]
         visited[0][0] = True
 
         while stack:
-            row, col = stack[-1]
+            col, row = stack[-1]
             neighbours = []
             # comprueba que las celdas vecinas buscadas estan disponibles
-            for direction, (dir_row, dir_col) in DIRECTIONS.items():
-                new_row, new_col = row + dir_row, col + dir_col
+            for direction, (dir_col, dir_row) in DIRECTIONS.items():
+                new_col, new_row = col + dir_col, row + dir_row
                 if (
-                    0 <= new_row < self.height
-                    and 0 <= new_col < self.width
-                    and not visited[new_row][new_col]
+                    0 <= new_col < self.width
+                    and 0 <= new_row < self.height
+                    and not visited[new_col][new_row]
                 ):
-                    neighbours.append((direction, new_row, new_col))
+                    neighbours.append((direction, new_col, new_row))
             if neighbours:
-                direction, new_row, new_col = random.choice(neighbours)
-                self.maze[row][col] &= ~direction
-                self.maze[new_row][new_col] &= ~OPPOSITE[direction]
-                visited[new_row][new_col] = True
-                stack.append((new_row, new_col))
+                direction, new_col, new_row = random.choice(neighbours)
+                self.maze[col][row] &= ~direction
+                self.maze[new_col][new_row] &= ~OPPOSITE[direction]
+                visited[new_col][new_row] = True
+                stack.append((new_col, new_row))
             else:
                 stack.pop()
         return self.maze
@@ -96,7 +96,7 @@ def print_maze(maze: list[list[int]]) -> None:
 
 
 if __name__ == "__main__":
-    maze = MazeGenerator(15, 15)
+    maze = MazeGenerator(10, 15)
     result = maze.generate()
 #    for row in result:
 #        print(" ".join(f"{num:2}" for num in row))
