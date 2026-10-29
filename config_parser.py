@@ -50,10 +50,14 @@ def read_config(path: str) -> dict[str, str]:
     """Read the config file and return its KEY=VALUE pairs as text."""
     data: dict[str, str] = {}
     with open(path, encoding="utf-8") as file:
-        for line in file:
+        for number, line in enumerate(file, start=1):
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
+            if "=" not in line:
+                raise ValueError(
+                    f"line {number}: expected KEY=VALUE, got ´{line}'"
+                )
             key, value = line.split("=", 1)
             data[key.strip()] = value.strip()
     return data
