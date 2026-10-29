@@ -72,7 +72,7 @@ def main() -> None:
         config_data = read_config(config_path)
 
         # Validar los datos usando el modelo Pydantic
-        params = MazeParameters(**config_data)
+        params = MazeParameters.model_validate(config_data)
 
         # Mostrar los parámetros validados
         print("Configuración válida")
