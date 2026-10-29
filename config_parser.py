@@ -56,7 +56,7 @@ def read_config(path: str) -> dict[str, str]:
                 continue
             if "=" not in line:
                 raise ValueError(
-                    f"line {number}: expected KEY=VALUE, got ´{line}'"
+                    f"line {number}: expected KEY=VALUE, got '{line}'"
                 )
             key, value = line.split("=", 1)
             data[key.strip()] = value.strip()
