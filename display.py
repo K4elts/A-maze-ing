@@ -13,12 +13,15 @@ def draw_maze(
 ) -> None:
     """Draw the maze walls, entry and exit in the terminal.
 
+    Each cell draws only its north and west walls, so shared walls are
+    drawn once. The last column adds its east wall and the last row its
+    south wall.
+
     Args:
         maze: The maze as a list of rows; each cell is a number from 0 to 15.
         entry: Entry coordinates (x, y), drawn as "E".
         exit_cell: Exit coordinates (x, y), drawn as "X".
     """
-    # CAMBIO 1: enumerate() da el numero de fila (y) ademas de la fila.
     for y, row in enumerate(maze):
         top = ""
         for cell in row:
@@ -29,16 +32,13 @@ def draw_maze(
         print(top + "+")
 
         middle = ""
-        # CAMBIO 2: enumerate() da el numero de columna (x) de cada celda.
         for x, cell in enumerate(row):
-            # CAMBIO 3: elegir que va DENTRO de la celda.
             if (x, y) == entry:
                 inside = " E "
             elif (x, y) == exit_cell:
                 inside = " X "
             else:
                 inside = "   "
-            # CAMBIO 4: la pared Oeste (o un espacio) + lo de dentro.
             if cell & WEST:
                 middle += "|" + inside
             else:
@@ -60,5 +60,4 @@ def draw_maze(
 
 if __name__ == "__main__":
     test_maze = [[9, 5, 3], [12, 5, 6]]
-    # CAMBIO 5: ahora hay que pasarle tambien la entrada y la salida.
     draw_maze(test_maze, (0, 0), (2, 1))
