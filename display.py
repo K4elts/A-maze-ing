@@ -7,6 +7,7 @@ WEST: int = 8
 
 RESET: str = "\033[0m"
 PATH_COLOR: str = "\033[103m"
+CLEAR_SCREEN: str = "\033[2J\033[H"
 
 WALL_COLORS: list[str] = [
     "\033[97m",  # white
@@ -120,9 +121,62 @@ def draw_maze(
     print(bottom + corner)
 
 
+MENU: str = """
+=== A-Maze-ing ===
+1. Re-generate a new maze
+2. Show / Hide the shortest path
+3. Rotate the wall colours
+4. Quit"""
+
+
+def run_menu(
+    maze: list[list[int]],
+    entry: tuple[int, int],
+    exit_cell: tuple[int, int],
+    solution: str,
+) -> None:
+    """Draw the maze and let the user interact with it until they quit.
+
+    Args:
+        maze: The maze as a list of rows; each cell is a number from 0 to 15.
+        entry: Entry coordinates (x, y).
+        exit_cell: Exit coordinates (x, y).
+        solution: Shortest path from entry to exit, e.g. "EES".
+    """
+    show_path = False
+    color_index = 0
+    message = ""
+
+    while True:
+        print(CLEAR_SCREEN, end="")
+        if show_path:
+            path = path_cells(entry, solution)
+        else:
+            path = set()
+        draw_maze(maze, entry, exit_cell, path, WALL_COLORS[color_index])
+        print(MENU)
+        if message:
+            print(message)
+            message = ""
+
+        try:
+            choice = input("Choice? (1-4): ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            break
+
+        if choice == "1":
+            message = "Re-generating is not available yet."
+        elif choice == "2":
+            show_path = not show_path
+        elif choice == "3":
+            color_index = (color_index + 1) % len(WALL_COLORS)
+        elif choice == "4":
+            break
+        else:
+            message = "Invalid choice: please type 1, 2, 3 or 4."
+
+
 if __name__ == "__main__":
     test_maze = [[9, 5, 3], [12, 5, 6]]
-    test_path = path_cells((0, 0), "EES")
-    for color in WALL_COLORS:
-        draw_maze(test_maze, (0, 0), (2, 1), test_path, color)
-        print()
+    run_menu(test_maze, (0, 0), (2, 1), "EES")
