@@ -6,10 +6,39 @@ SOUTH: int = 4
 WEST: int = 8
 
 
+def path_cells(
+    entry: tuple[int, int],
+    solution: str,
+) -> set[tuple[int, int]]:
+    """Return the cells the path goes through, following its letters.
+
+    Args:
+        entry: Entry coordinates (x, y), where the path starts.
+        solution: Path as letters N, E, S, W, e.g. "EES".
+
+    Returns:
+        The set of (x, y) cells visited after each step.
+    """
+    cells: set[tuple[int, int]] = set()
+    x, y = entry
+    for letter in solution:
+        if letter == "N":
+            y -= 1
+        elif letter == "S":
+            y += 1
+        elif letter == "E":
+            x += 1
+        elif letter == "W":
+            x -= 1
+        cells.add((x, y))
+    return cells
+
+
 def draw_maze(
     maze: list[list[int]],
     entry: tuple[int, int],
     exit_cell: tuple[int, int],
+    path: set[tuple[int, int]],
 ) -> None:
     """Draw the maze walls, entry and exit in the terminal.
 
@@ -37,6 +66,8 @@ def draw_maze(
                 inside = " E "
             elif (x, y) == exit_cell:
                 inside = " X "
+            elif(x, y) in path:
+                inside = " . "
             else:
                 inside = "   "
             if cell & WEST:
@@ -60,4 +91,7 @@ def draw_maze(
 
 if __name__ == "__main__":
     test_maze = [[9, 5, 3], [12, 5, 6]]
-    draw_maze(test_maze, (0, 0), (2, 1))
+    test_path = path_cells((0,0), "EES")
+    draw_maze(test_maze, (0, 0), (2, 1), test_path)
+    print()
+    draw_maze(test_maze, (0,0), (2, 1), set())
