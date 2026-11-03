@@ -66,7 +66,7 @@ def draw_maze(
                 inside = " E "
             elif (x, y) == exit_cell:
                 inside = " X "
-            elif(x, y) in path:
+            elif (x, y) in path:
                 inside = " . "
             else:
                 inside = "   "
@@ -91,7 +91,7 @@ def draw_maze(
 
 if __name__ == "__main__":
     test_maze = [[9, 5, 3], [12, 5, 6]]
-    test_path = path_cells((0,0), "EES")
+    test_path = path_cells((0, 0), "EES")
     draw_maze(test_maze, (0, 0), (2, 1), test_path)
     print()
-    draw_maze(test_maze, (0,0), (2, 1), set())
+    draw_maze(test_maze, (0, 0), (2, 1), set())
