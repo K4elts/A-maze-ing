@@ -6,6 +6,10 @@ SOUTH: int = 4
 WEST: int = 8
 
 
+RESET: str = "\033[0m"
+PATH_COLOR: str = "\033[103m"
+
+
 def path_cells(
     entry: tuple[int, int],
     solution: str,
@@ -67,7 +71,7 @@ def draw_maze(
             elif (x, y) == exit_cell:
                 inside = " X "
             elif (x, y) in path:
-                inside = " . "
+                inside = PATH_COLOR + "   " + RESET
             else:
                 inside = "   "
             if cell & WEST:
