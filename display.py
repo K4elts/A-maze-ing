@@ -5,7 +5,6 @@ EAST: int = 2
 SOUTH: int = 4
 WEST: int = 8
 
-
 RESET: str = "\033[0m"
 PATH_COLOR: str = "\033[103m"
 
@@ -44,7 +43,7 @@ def draw_maze(
     exit_cell: tuple[int, int],
     path: set[tuple[int, int]],
 ) -> None:
-    """Draw the maze walls, entry and exit in the terminal.
+    """Draw the maze walls, entry, exit and path in the terminal.
 
     Each cell draws only its north and west walls, so shared walls are
     drawn once. The last column adds its east wall and the last row its
@@ -54,12 +53,22 @@ def draw_maze(
         maze: The maze as a list of rows; each cell is a number from 0 to 15.
         entry: Entry coordinates (x, y), drawn as "E".
         exit_cell: Exit coordinates (x, y), drawn as "X".
+        path: Cells of the path, drawn with a coloured background;
+            an empty set hides it.
     """
+    if path:
+        on_path = path | {entry}
+    else:
+        on_path = set()
+
     for y, row in enumerate(maze):
         top = ""
-        for cell in row:
+        # CAMBIO 2: enumerate() para saber la columna (x) de cada celda.
+        for x, cell in enumerate(row):
             if cell & NORTH:
                 top += "+---"
+            elif (x, y) in on_path and (x, y - 1) in on_path:
+                top += "+" + PATH_COLOR + "   " + RESET
             else:
                 top += "+   "
         print(top + "+")
@@ -67,15 +76,20 @@ def draw_maze(
         middle = ""
         for x, cell in enumerate(row):
             if (x, y) == entry:
-                inside = " E "
+                label = " E "
             elif (x, y) == exit_cell:
-                inside = " X "
-            elif (x, y) in path:
-                inside = PATH_COLOR + "   " + RESET
+                label = " X "
             else:
-                inside = "   "
+                label = "   "
+            if (x, y) in on_path:
+                inside = PATH_COLOR + label + RESET
+            else:
+                inside = label
+
             if cell & WEST:
                 middle += "|" + inside
+            elif (x, y) in on_path and (x - 1, y) in on_path:
+                middle += PATH_COLOR + " " + RESET + inside
             else:
                 middle += " " + inside
         if row[-1] & EAST:
