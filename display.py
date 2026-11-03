@@ -8,6 +8,14 @@ WEST: int = 8
 RESET: str = "\033[0m"
 PATH_COLOR: str = "\033[103m"
 
+WALL_COLORS: list[str] = [
+    "\033[97m",  # white
+    "\033[96m",  # cyan
+    "\033[95m",  # magenta
+    "\033[92m",  # green
+    "\033[91m",  # red
+]
+
 
 def path_cells(
     entry: tuple[int, int],
@@ -42,6 +50,7 @@ def draw_maze(
     entry: tuple[int, int],
     exit_cell: tuple[int, int],
     path: set[tuple[int, int]],
+    wall_color: str,
 ) -> None:
     """Draw the maze walls, entry, exit and path in the terminal.
 
@@ -55,7 +64,12 @@ def draw_maze(
         exit_cell: Exit coordinates (x, y), drawn as "X".
         path: Cells of the path, drawn with a coloured background;
             an empty set hides it.
+        wall_color: ANSI code used to colour the walls.
     """
+    corner = wall_color + "+" + RESET
+    wall_h = wall_color + "+---" + RESET
+    wall_v = wall_color + "|" + RESET
+
     if path:
         on_path = path | {entry}
     else:
@@ -63,15 +77,14 @@ def draw_maze(
 
     for y, row in enumerate(maze):
         top = ""
-        # CAMBIO 2: enumerate() para saber la columna (x) de cada celda.
         for x, cell in enumerate(row):
             if cell & NORTH:
-                top += "+---"
+                top += wall_h
             elif (x, y) in on_path and (x, y - 1) in on_path:
-                top += "+" + PATH_COLOR + "   " + RESET
+                top += corner + PATH_COLOR + "   " + RESET
             else:
-                top += "+   "
-        print(top + "+")
+                top += corner + "   "
+        print(top + corner)
 
         middle = ""
         for x, cell in enumerate(row):
@@ -87,13 +100,13 @@ def draw_maze(
                 inside = label
 
             if cell & WEST:
-                middle += "|" + inside
+                middle += wall_v + inside
             elif (x, y) in on_path and (x - 1, y) in on_path:
                 middle += PATH_COLOR + " " + RESET + inside
             else:
                 middle += " " + inside
         if row[-1] & EAST:
-            middle += "|"
+            middle += wall_v
         else:
             middle += " "
         print(middle)
@@ -101,15 +114,15 @@ def draw_maze(
     bottom = ""
     for cell in maze[-1]:
         if cell & SOUTH:
-            bottom += "+---"
+            bottom += wall_h
         else:
-            bottom += "+   "
-    print(bottom + "+")
+            bottom += corner + "   "
+    print(bottom + corner)
 
 
 if __name__ == "__main__":
     test_maze = [[9, 5, 3], [12, 5, 6]]
     test_path = path_cells((0, 0), "EES")
-    draw_maze(test_maze, (0, 0), (2, 1), test_path)
-    print()
-    draw_maze(test_maze, (0, 0), (2, 1), set())
+    for color in WALL_COLORS:
+        draw_maze(test_maze, (0, 0), (2, 1), test_path, color)
+        print()
