@@ -1,5 +1,5 @@
 '''SOLVES THE MAZE WITH THE SHORTEST PATH'''
-from generator import DIRECTIONS
+from .generator import DIRECTIONS
 
 
 def solve_dfs(

@@ -67,6 +67,10 @@ def draw_maze(
             an empty set hides it.
         wall_color: ANSI code used to colour the walls.
     """
+
+    width = len(maze)
+    height = len(maze[0])
+
     corner = wall_color + "+" + RESET
     wall_h = wall_color + "+---" + RESET
     wall_v = wall_color + "|" + RESET
@@ -76,9 +80,10 @@ def draw_maze(
     else:
         on_path = set()
 
-    for y, row in enumerate(maze):
+    for y in range(height):
         top = ""
-        for x, cell in enumerate(row):
+        for x in range(width):
+            cell = maze[x][y]
             if cell & NORTH:
                 top += wall_h
             elif (x, y) in on_path and (x, y - 1) in on_path:
@@ -88,7 +93,8 @@ def draw_maze(
         print(top + corner)
 
         middle = ""
-        for x, cell in enumerate(row):
+        for x in range(width):
+            cell = maze[x][y]
             if (x, y) == entry:
                 label = " E "
             elif (x, y) == exit_cell:
@@ -106,14 +112,15 @@ def draw_maze(
                 middle += PATH_COLOR + " " + RESET + inside
             else:
                 middle += " " + inside
-        if row[-1] & EAST:
+        if maze[width - 1][y] & EAST:
             middle += wall_v
         else:
             middle += " "
         print(middle)
 
     bottom = ""
-    for cell in maze[-1]:
+    for x in range(width):
+        cell = maze[x][height - 1]
         if cell & SOUTH:
             bottom += wall_h
         else:

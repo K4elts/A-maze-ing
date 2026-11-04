@@ -9,10 +9,10 @@ WEST: int = 8
 ALL_WALLS: int = NORTH | EAST | SOUTH | WEST
 
 DIRECTIONS = {
-    NORTH: (-1, 0),
-    EAST: (0, 1),
-    SOUTH: (1, 0),
-    WEST: (0, -1)
+    NORTH: (0, -1),
+    EAST: (1, 0),
+    SOUTH: (0, 1),
+    WEST: (-1, 0)
 }
 
 OPPOSITE = {
@@ -66,37 +66,37 @@ class MazeGenerator:
 
 # ---------------- CHECK -----------------------
 def print_maze(maze: list[list[int]]) -> None:
-    height = len(maze)
-    width = len(maze[0])
+    width = len(maze)
+    height = len(maze[0])
 
     for row in range(height):
         # Paredes superiores de las celdas
         top = ""
         for col in range(width):
             top += "+"
-            top += "---" if maze[row][col] & NORTH else "   "
+            top += "---" if maze[col][row] & NORTH else "   "
         top += "+"
         print(top)
 
         # Paredes laterales y contenido de las celdas
         middle = ""
         for col in range(width):
-            middle += "|" if maze[row][col] & WEST else " "
+            middle += "|" if maze[col][row] & WEST else " "
             middle += "   "
-        middle += "|" if maze[row][width - 1] & EAST else " "
+        middle += "|" if maze[width - 1][row] & EAST else " "
         print(middle)
 
     # Paredes inferiores de la última fila
     bottom = ""
     for col in range(width):
         bottom += "+"
-        bottom += "---" if maze[height - 1][col] & SOUTH else "   "
+        bottom += "---" if maze[col][height - 1] & SOUTH else "   "
     bottom += "+"
     print(bottom)
 
 
 if __name__ == "__main__":
-    maze = MazeGenerator(10, 15)
+    maze = MazeGenerator(height=10, width=5)
     result = maze.generate()
 #    for row in result:
 #        print(" ".join(f"{num:2}" for num in row))
