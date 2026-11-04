@@ -3,7 +3,30 @@ from mazegen.generator import MazeGenerator
 from mazegen.solver import solve_dfs
 
 
-def path_to_directions(path):
+def path_to_directions(path: list[tuple[int, int]]) -> str:
+    """
+    Converts a list of maze path coordinates into a string of movement
+    directions.
+
+    Each consecutive pair of coordinates is compared to determine the movement:
+        - N: North (up)
+        - E: East (right)
+        - S: South (down)
+        - W: West (left)
+
+    Args:
+        path (list[tuple[int, int]]): List of (x, y) coordinates representing
+            the solution path through the maze.
+
+    Returns:
+        str: A string containing the movement directions (N, E, S, W)
+            required to follow the path. Returns an empty string if the
+            path contains fewer than two coordinates.
+
+    Example:
+        >>> path_to_directions([(0, 0), (1, 0), (1, 1), (1, 2), (2, 2)])
+        'EESS'
+    """
     directions = {
         (0, -1): "N",
         (1, 0): "E",
