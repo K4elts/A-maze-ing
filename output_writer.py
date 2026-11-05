@@ -13,8 +13,8 @@ def path_to_directions(path: list[tuple[int, int]]) -> str:
         - W: West (left)
 
     Args:
-        path (list[tuple[int, int]]): List of (x, y) coordinates representing
-            the solution path through the maze.
+        path (list[tuple[int, int]]): List of (row, col) coordinates
+            representing the solution path through the maze.
 
     Returns:
         str: A string containing the movement directions (N, E, S, W)
@@ -22,7 +22,7 @@ def path_to_directions(path: list[tuple[int, int]]) -> str:
             path contains fewer than two coordinates.
 
     Example:
-        >>> path_to_directions([(0, 0), (1, 0), (1, 1), (1, 2), (2, 2)])
+        >>> path_to_directions([(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)])
         'EESS'
     """
     directions = {
@@ -55,17 +55,20 @@ def write_maze(
 ) -> None:
     """Write the maze, its entry, exit and shortest path to a file.
 
+    Inside the program coordinates are (row, col), but the output file
+    uses "x,y" (column first), so they are written the other way round.
+
     Args:
         path: Name of the output file.
         maze: The maze as a list of rows; each cell is a number from 0 to 15.
-        entry: Entry coordinates (x, y).
-        exit_cell: Exit coordinates (x, y).
+        entry: Entry coordinates (row, col).
+        exit_cell: Exit coordinates (row, col).
         solution: Shortest path from entry to exit, e.g. "EESN".
     """
     with open(path, "w", encoding="utf-8") as file:
         for row in maze:
             file.write("".join([format(cell, "X") for cell in row]) + "\n")
         file.write("\n")
-        file.write(f"{entry[0]},{entry[1]}\n")
-        file.write(f"{exit_cell[0]},{exit_cell[1]}\n")
+        file.write(f"{entry[1]},{entry[0]}\n")
+        file.write(f"{exit_cell[1]},{exit_cell[0]}\n")
         file.write(solution + "\n")
