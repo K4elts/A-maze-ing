@@ -1,6 +1,7 @@
 from display import WALL_COLORS, draw_maze
 from mazegen.generator import MazeGenerator
 from mazegen.solver import solve_dfs
+import output_writer
 
 
 def path_to_directions(path: list[tuple[int, int]]) -> str:
@@ -28,37 +29,39 @@ def path_to_directions(path: list[tuple[int, int]]) -> str:
         'EESS'
     """
     directions = {
-        (0, -1): "N",
-        (1, 0): "E",
-        (0, 1): "S",
-        (-1, 0): "W"
+        (-1, 0): "N",
+        (0, 1): "E",
+        (1, 0): "S",
+        (0, -1): "W"
     }
 
     moves = ""
 
     for i in range(len(path) - 1):
-        x1, y1 = path[i]
-        x2, y2 = path[i + 1]
+        row1, col1 = path[i]
+        row2, col2 = path[i + 1]
 
-        dx = x2 - x1
-        dy = y2 - y1
+        drow = row2 - row1
+        dcol = col2 - col1
 
-        moves += directions[(dx, dy)]
+        moves += directions[(drow, dcol)]
 
     return moves
 
 
-#maze = MazeGenerator(height=20, width=10).generate()
 maze = MazeGenerator(height=10, width=20)
 result = maze.generate()
-print(len(result[0]), "rows x", len(result), "columns")
+print(len(result), "rows x", len(result[0]), "columns")
 start = (0, 0)
-end = (maze.width - 1, maze.height - 1)
+end = (maze.height - 1, maze.width - 1)
 draw_maze(result, start, end, set(), WALL_COLORS[0])
+print(f"Result: {result}")
 print()
 path = solve_dfs(maze, start, end)
 print(f"Path: {path}")
+print()
 movements = path_to_directions(path)
 print(f"Movements: {movements}")
 print(f"Number of Movements: {len(movements)}")
 draw_maze(result, start, end, set(path or []), WALL_COLORS[0])
+output_writer.write_maze("output_file.txt", result, start, end, movements)

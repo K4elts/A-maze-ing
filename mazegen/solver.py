@@ -9,17 +9,17 @@ def solve_dfs(
 ) -> list[tuple[int, int]] | None:
 
     if end is None:
-        end = (self.width - 1, self.height - 1)
+        end = (self.height - 1, self.width - 1)
 
     stack = [start]
     visited = {start}
     parent = {start: None}
 
     while stack:
-        col, row = stack.pop()
+        row, col = stack.pop()
 
         # ¿Hemos llegado a la salida?
-        if (col, row) == end:
+        if (row, col) == end:
             path = []
             current = end
 
@@ -30,26 +30,27 @@ def solve_dfs(
             return path[::-1]
 
         # Explorar las celdas vecinas
-        for direction, (dir_col, dir_row) in DIRECTIONS.items():
-            new_col = col + dir_col
+        for direction, (dir_row, dir_col) in DIRECTIONS.items():
             new_row = row + dir_row
-            neighbour = (new_col, new_row)
+            new_col = col + dir_col
+            neighbour = (new_row, new_col)
 
             # Comprobar límites
-            valid_col = 0 <= new_col < self.width
             valid_row = 0 <= new_row < self.height
-            if not (valid_col and valid_row):
+            valid_col = 0 <= new_col < self.width
+
+            if not (valid_row and valid_col):
                 continue
 
             # No atravesar paredes ni visitar celdas repetidas
-            if self.maze[col][row] & direction:
+            if self.maze[row][col] & direction:
                 continue
 
             if neighbour in visited:
                 continue
 
             visited.add(neighbour)
-            parent[neighbour] = (col, row)
+            parent[neighbour] = (row, col)
             stack.append(neighbour)
 
     return None
@@ -62,7 +63,7 @@ def solve_bfs(
 ) -> list[tuple[int, int]] | None:
 
     if end is None:
-        end = (self.width - 1, self.height - 1)
+        end = (self.height - 1, self.width - 1)
 
     queue = [start]
     index = 0
@@ -71,11 +72,11 @@ def solve_bfs(
     parent = {start: None}
 
     while index < len(queue):
-        col, row = queue[index]
+        row, col = queue[index]
         index += 1
 
         # ¿Hemos llegado a la salida?
-        if (col, row) == end:
+        if (row, col) == end:
             path = []
             current = end
 
@@ -86,20 +87,20 @@ def solve_bfs(
             return path[::-1]
 
         # Explorar las celdas vecinas
-        for direction, (dir_col, dir_row) in DIRECTIONS.items():
-            new_col = col + dir_col
+        for direction, (dir_row, dir_col) in DIRECTIONS.items():
             new_row = row + dir_row
-            neighbour = (new_col, new_row)
+            new_col = col + dir_col
+            neighbour = (new_row, new_col)
 
             # Comprobar límites
-            valid_col = 0 <= new_col < self.width
             valid_row = 0 <= new_row < self.height
+            valid_col = 0 <= new_col < self.width
 
-            if not (valid_col and valid_row):
+            if not (valid_row and valid_col):
                 continue
 
             # No atravesar paredes
-            if self.maze[col][row] & direction:
+            if self.maze[row][col] & direction:
                 continue
 
             # No visitar celdas repetidas
@@ -107,7 +108,7 @@ def solve_bfs(
                 continue
 
             visited.add(neighbour)
-            parent[neighbour] = (col, row)
+            parent[neighbour] = (row, col)
             queue.append(neighbour)
 
     return None

@@ -32,17 +32,17 @@ def path_cells(
         The set of (x, y) cells visited after each step.
     """
     cells: set[tuple[int, int]] = set()
-    x, y = entry
+    row, col = entry
     for letter in solution:
         if letter == "N":
-            y -= 1
+            row -= 1
         elif letter == "S":
-            y += 1
+            row += 1
         elif letter == "E":
-            x += 1
+            col += 1
         elif letter == "W":
-            x -= 1
-        cells.add((x, y))
+            col -= 1
+        cells.add((row, col))
     return cells
 
 
@@ -55,22 +55,8 @@ def draw_maze(
 ) -> None:
     """Draw the maze walls, entry, exit and path in the terminal.
 
-    Each cell draws only its north and west walls, so shared walls are
-    drawn once. The last column adds its east wall and the last row its
-    south wall.
-
-    Args:
-        maze: The maze as a list of rows; each cell is a number from 0 to 15.
-        entry: Entry coordinates (x, y), drawn as "E".
-        exit_cell: Exit coordinates (x, y), drawn as "X".
-        path: Cells of the path, drawn with a coloured background;
-            an empty set hides it.
-        wall_color: ANSI code used to colour the walls.
+    All coordinates use (row, column).
     """
-
-    width = len(maze)
-    height = len(maze[0])
-
     corner = wall_color + "+" + RESET
     wall_h = wall_color + "+---" + RESET
     wall_v = wall_color + "|" + RESET
@@ -80,47 +66,57 @@ def draw_maze(
     else:
         on_path = set()
 
-    for y in range(height):
+    for row_idx, row in enumerate(maze):
         top = ""
-        for x in range(width):
-            cell = maze[x][y]
+
+        for col_idx, cell in enumerate(row):
             if cell & NORTH:
                 top += wall_h
-            elif (x, y) in on_path and (x, y - 1) in on_path:
+            elif (
+                (row_idx, col_idx) in on_path
+                and (row_idx - 1, col_idx) in on_path
+            ):
                 top += corner + PATH_COLOR + "   " + RESET
             else:
                 top += corner + "   "
         print(top + corner)
 
         middle = ""
-        for x in range(width):
-            cell = maze[x][y]
-            if (x, y) == entry:
+
+        for col_idx, cell in enumerate(row):
+            position = (row_idx, col_idx)
+
+            if position == entry:
                 label = " E "
-            elif (x, y) == exit_cell:
+            elif position == exit_cell:
                 label = " X "
             else:
                 label = "   "
-            if (x, y) in on_path:
+
+            if position in on_path:
                 inside = PATH_COLOR + label + RESET
             else:
                 inside = label
 
             if cell & WEST:
                 middle += wall_v + inside
-            elif (x, y) in on_path and (x - 1, y) in on_path:
+            elif (
+                position in on_path
+                and (row_idx, col_idx - 1) in on_path
+            ):
                 middle += PATH_COLOR + " " + RESET + inside
             else:
                 middle += " " + inside
-        if maze[width - 1][y] & EAST:
+
+        if row[-1] & EAST:
             middle += wall_v
         else:
             middle += " "
         print(middle)
 
     bottom = ""
-    for x in range(width):
-        cell = maze[x][height - 1]
+
+    for cell in maze[-1]:
         if cell & SOUTH:
             bottom += wall_h
         else:
