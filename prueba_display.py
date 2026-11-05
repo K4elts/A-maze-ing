@@ -41,10 +41,10 @@ def path_to_directions(path: list[tuple[int, int]]) -> str:
         row1, col1 = path[i]
         row2, col2 = path[i + 1]
 
-        drow = row2 - row1
-        dcol = col2 - col1
+        diff_row = row2 - row1
+        diff_col = col2 - col1
 
-        moves += directions[(drow, dcol)]
+        moves += directions[(diff_row, diff_col)]
 
     return moves
 
