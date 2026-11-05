@@ -25,11 +25,11 @@ def path_cells(
     """Return the cells the path goes through, following its letters.
 
     Args:
-        entry: Entry coordinates (x, y), where the path starts.
+        entry: Entry coordinates (row, col), where the path starts.
         solution: Path as letters N, E, S, W, e.g. "EES".
 
     Returns:
-        The set of (x, y) cells visited after each step.
+        The set of (row, col) cells visited after each step.
     """
     cells: set[tuple[int, int]] = set()
     row, col = entry
@@ -55,7 +55,17 @@ def draw_maze(
 ) -> None:
     """Draw the maze walls, entry, exit and path in the terminal.
 
-    All coordinates use (row, column).
+    Each cell draws only its north and west walls, so shared walls are
+    drawn once. The last column adds its east wall and the last row its
+    south wall. All coordinates use (row, col).
+
+    Args:
+        maze: The maze as a list of rows; each cell is a number from 0 to 15.
+        entry: Entry coordinates (row, col), drawn as "E".
+        exit_cell: Exit coordinates (row, col), drawn as "X".
+        path: Cells of the path, drawn with a coloured background;
+            an empty set hides it.
+        wall_color: ANSI code used to colour the walls.
     """
     corner = wall_color + "+" + RESET
     wall_h = wall_color + "+---" + RESET
@@ -142,8 +152,8 @@ def run_menu(
 
     Args:
         maze: The maze as a list of rows; each cell is a number from 0 to 15.
-        entry: Entry coordinates (x, y).
-        exit_cell: Exit coordinates (x, y).
+        entry: Entry coordinates (row, col).
+        exit_cell: Exit coordinates (row, col).
         solution: Shortest path from entry to exit, e.g. "EES".
     """
     show_path = False
@@ -182,4 +192,4 @@ def run_menu(
 
 if __name__ == "__main__":
     test_maze = [[9, 5, 3], [12, 5, 6]]
-    run_menu(test_maze, (0, 0), (2, 1), "EES")
+    run_menu(test_maze, (0, 0), (1, 2), "EES")
