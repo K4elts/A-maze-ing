@@ -122,7 +122,7 @@ def print_maze(maze: list[list[int]]) -> None:
 
 
 if __name__ == "__main__":
-    maze = MazeGenerator(height=10, width=5)
+    maze = MazeGenerator(height=10, width=5, perfect=True)
     result = maze.generate()
 #    for row in result:
 #        print(" ".join(f"{num:2}" for num in row))
