@@ -7,7 +7,6 @@ SOUTH: int = 4
 WEST: int = 8
 
 RESET: str = "\033[0m"
-PATH_COLOR: str = "\033[103m"
 CLEAR_SCREEN: str = "\033[2J\033[H"
 
 WALL_COLORS: list[str] = [
@@ -16,6 +15,13 @@ WALL_COLORS: list[str] = [
     "\033[95m",  # magenta
     "\033[92m",  # green
     "\033[91m",  # red
+]
+
+PATH_COLORS: list[str] = [
+    "\033[103m",  # yellow
+    "\033[102m",  # green
+    "\033[106m",  # cyan
+    "\033[105m",  # magenta
 ]
 
 
@@ -53,6 +59,7 @@ def draw_maze(
     exit_cell: tuple[int, int],
     path: set[tuple[int, int]],
     wall_color: str,
+    path_color: str = PATH_COLORS[0],
 ) -> None:
     """Draw the maze walls, entry, exit and path in the terminal.
 
@@ -67,6 +74,7 @@ def draw_maze(
         path: Cells of the path, drawn with a coloured background;
             an empty set hides it.
         wall_color: ANSI code used to colour the walls.
+        path_color: ANSI code used as background for the path.
     """
     corner = wall_color + "+" + RESET
     wall_h = wall_color + "+---" + RESET
@@ -87,7 +95,7 @@ def draw_maze(
                 (row_idx, col_idx) in on_path
                 and (row_idx - 1, col_idx) in on_path
             ):
-                top += corner + PATH_COLOR + "   " + RESET
+                top += corner + path_color + "   " + RESET
             else:
                 top += corner + "   "
         print(top + corner)
@@ -105,7 +113,7 @@ def draw_maze(
                 label = "   "
 
             if position in on_path:
-                inside = PATH_COLOR + label + RESET
+                inside = path_color + label + RESET
             else:
                 inside = label
 
@@ -115,7 +123,7 @@ def draw_maze(
                 position in on_path
                 and (row_idx, col_idx - 1) in on_path
             ):
-                middle += PATH_COLOR + " " + RESET + inside
+                middle += path_color + " " + RESET + inside
             else:
                 middle += " " + inside
 
@@ -140,7 +148,8 @@ MENU: str = """
 1. Re-generate a new maze
 2. Show / Hide the shortest path
 3. Rotate the wall colours
-4. Quit"""
+4. Rotate the path colour
+5. Quit"""
 
 
 def run_menu(
@@ -162,6 +171,7 @@ def run_menu(
     """
     show_path = False
     color_index = 0
+    path_color_index = 0
     message = ""
 
     while True:
@@ -170,14 +180,17 @@ def run_menu(
             path = path_cells(entry, solution)
         else:
             path = set()
-        draw_maze(maze, entry, exit_cell, path, WALL_COLORS[color_index])
+        draw_maze(
+            maze, entry, exit_cell, path,
+            WALL_COLORS[color_index], PATH_COLORS[path_color_index],
+        )
         print(MENU)
         if message:
             print(message)
             message = ""
 
         try:
-            choice = input("Choice? (1-4): ").strip()
+            choice = input("Choice? (1-5): ").strip()
         except (EOFError, KeyboardInterrupt):
             print()
             break
@@ -193,9 +206,11 @@ def run_menu(
         elif choice == "3":
             color_index = (color_index + 1) % len(WALL_COLORS)
         elif choice == "4":
+            path_color_index = (path_color_index + 1) % len(PATH_COLORS)
+        elif choice == "5":
             break
         else:
-            message = "Invalid choice: please type 1, 2, 3 or 4."
+            message = "Invalid choice: please type a number from 1 to 5."
 
 
 if __name__ == "__main__":
