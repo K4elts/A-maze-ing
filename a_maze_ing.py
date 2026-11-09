@@ -73,8 +73,12 @@ def regenerate() -> tuple[list[list[int]], str]:
 
 try:
     maze, solution = regenerate()
-except (OSError, RuntimeError) as error:
+except OSError as error:
+    print(f"Error: cannot write '{params.OUTPUT_FILE}': {error.strerror}")
+    sys.exit(1)
+except RuntimeError as error:
     print(f"Error: {error}")
     sys.exit(1)
+
 
 run_menu(maze, entry, exit_cell, solution, regenerate)
