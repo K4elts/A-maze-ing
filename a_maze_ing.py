@@ -81,4 +81,4 @@ except RuntimeError as error:
     sys.exit(1)
 
 
-run_menu(maze, entry, exit_cell, solution, regenerate)
+run_menu(maze, entry, exit_cell, solution, regenerate, params.PERFECT)

@@ -13,18 +13,18 @@ ENTRY_COLOR: str = "\033[1;92m"  # bold green
 EXIT_COLOR: str = "\033[1;91m"  # bold red
 
 WALL_COLORS: list[str] = [
+    "\033[92m",  # green
     "\033[97m",  # white
     "\033[96m",  # cyan
     "\033[95m",  # magenta
-    "\033[92m",  # green
     "\033[91m",  # red
 ]
 
 PATH_COLORS: list[str] = [
+    "\033[105m",  # magenta
     "\033[103m",  # yellow
     "\033[102m",  # green
     "\033[106m",  # cyan
-    "\033[105m",  # magenta
 ]
 
 
@@ -149,6 +149,14 @@ def draw_maze(
     print(bottom + corner)
 
 
+def maze_info(maze: list[list[int]], solution: str, perfect: bool) -> str:
+    """Return a short line with the maze size, its type and path length."""
+    height = len(maze)
+    width = len(maze[0])
+    kind = "perfect" if perfect else "Pac-Man"
+    return f"{width}x{height} | {kind} | path: {len(solution)} steps"
+
+
 MENU: str = """
 === A-Maze-ing ===
 1. Re-generate a new maze
@@ -164,6 +172,7 @@ def run_menu(
     exit_cell: tuple[int, int],
     solution: str,
     regenerate: Callable[[], tuple[list[list[int]], str]],
+    perfect: bool = True,
 ) -> None:
     """Draw the maze and let the user interact with it until they quit.
 
@@ -174,6 +183,7 @@ def run_menu(
         solution: Shortest path from entry to exit, e.g. "EES".
         regenerate: Function that builds a new maze and returns it
             together with its solution.
+        perfect: Whether the maze is perfect, shown in the info line.
     """
     show_path = False
     color_index = 0
@@ -190,6 +200,8 @@ def run_menu(
             maze, entry, exit_cell, path,
             WALL_COLORS[color_index], PATH_COLORS[path_color_index],
         )
+        print()
+        print(maze_info(maze, solution, perfect))
         print(MENU)
         if message:
             print(message)
