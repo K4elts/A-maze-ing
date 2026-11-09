@@ -6,6 +6,8 @@ from pydantic import (
     model_validator
 )
 
+from mazegen.pattern import pattern_cells
+
 
 class MazeParameters(BaseModel):
     """Maze settings read from the config file, already validated.
@@ -38,8 +40,12 @@ class MazeParameters(BaseModel):
 
     @model_validator(mode="after")
     def check_entry_and_exit(self) -> "MazeParameters":
-        """Check that ENTRY and EXIT are inside the maze and different."""
-        for name, (x, y) in (("ENTRY", self.ENTRY), ("EXIT", self.EXIT)):
+        """Check ENTRY and EXIT: inside the maze, different, not on the 42.
+
+        The 42 pattern uses (row, col), so each point is checked as (y, x).
+        """
+        points = (("ENTRY", self.ENTRY), ("EXIT", self.EXIT))
+        for name, (x, y) in points:
             if not (0 <= x < self.WIDTH and 0 <= y < self.HEIGHT):
                 raise ValueError(
                     f"{name} {x},{y} is outside the maze "
@@ -48,6 +54,14 @@ class MazeParameters(BaseModel):
                 )
         if self.ENTRY == self.EXIT:
             raise ValueError("ENTRY and EXIT must be different")
+
+        blocked = pattern_cells(self.HEIGHT, self.WIDTH)
+        if blocked is not None:
+            for name, (x, y) in points:
+                if (y, x) in blocked:
+                    raise ValueError(
+                        f"{name} {x},{y} is inside the 42 pattern"
+                    )
         return self
 
 
