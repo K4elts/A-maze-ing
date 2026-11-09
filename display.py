@@ -1,4 +1,5 @@
 '''DRAWS THE MAZE IN THE TERMINAL'''
+from typing import Callable
 
 NORTH: int = 1
 EAST: int = 2
@@ -147,6 +148,7 @@ def run_menu(
     entry: tuple[int, int],
     exit_cell: tuple[int, int],
     solution: str,
+    regenerate: Callable[[], tuple[list[list[int]], str]],
 ) -> None:
     """Draw the maze and let the user interact with it until they quit.
 
@@ -155,6 +157,8 @@ def run_menu(
         entry: Entry coordinates (row, col).
         exit_cell: Exit coordinates (row, col).
         solution: Shortest path from entry to exit, e.g. "EES".
+        regenerate: Function that builds a new maze and returns it
+            together with its solution.
     """
     show_path = False
     color_index = 0
@@ -179,7 +183,11 @@ def run_menu(
             break
 
         if choice == "1":
-            message = "Re-generating is not available yet."
+            try:
+                maze, solution = regenerate()
+                message = "New maze generated."
+            except (OSError, RuntimeError) as error:
+                message = f"Error: {error}"
         elif choice == "2":
             show_path = not show_path
         elif choice == "3":
@@ -192,4 +200,9 @@ def run_menu(
 
 if __name__ == "__main__":
     test_maze = [[9, 5, 3], [12, 5, 6]]
-    run_menu(test_maze, (0, 0), (1, 2), "EES")
+
+    def same_maze() -> tuple[list[list[int]], str]:
+        """Return the same test maze, to try the menu without a generator."""
+        return test_maze, "EES"
+
+    run_menu(test_maze, (0, 0), (1, 2), "EES", same_maze)
