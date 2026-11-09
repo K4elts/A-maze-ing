@@ -24,7 +24,7 @@ debug:
 
 # Removes temporary files and/or caches
 clean:
-	rm -rf __pycache__ .pytest_cache .mypy_cache .flake8_cache
+	rm -rf __pycache__ .pytest_cache .mypy_cache .flake8_cache build mazegen.egg-info
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -prune -exec rm -rf {} +
 
@@ -40,3 +40,4 @@ lint-strict:
 # Build the reusable mazegen package (.whl)
 build:
 	$(BIN)/python -m build --wheel --outdir .
+	rm -rf build mazegen.egg-info

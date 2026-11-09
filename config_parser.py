@@ -2,12 +2,16 @@
 from typing import Any, Optional
 
 from pydantic import (
-    BaseModel, ConfigDict, ValidationError, Field, field_validator,
-    model_validator
+    BaseModel, ConfigDict, Field, field_validator, model_validator
 )
 
 
 class MazeParameters(BaseModel):
+    """Maze settings read from the config file, already validated.
+
+    Coordinates are kept as written in the file: (x, y), column first.
+    """
+
     model_config = ConfigDict(extra='forbid')
 
     WIDTH: int = Field(..., ge=1)
@@ -61,44 +65,3 @@ def read_config(path: str) -> dict[str, str]:
             key, value = line.split("=", 1)
             data[key.strip()] = value.strip()
     return data
-
-
-def main() -> None:
-    '''
-    -------------------------
-        MAIN DE PRUEBA
-    -------------------------
-    '''
-    config_path = "config.txt"
-
-    try:
-        # Leer el archivo de configuración
-        config_data = read_config(config_path)
-
-        # Validar los datos usando el modelo Pydantic
-        params = MazeParameters.model_validate(config_data)
-
-        # Mostrar los parámetros validados
-        print("Configuración válida")
-        print("-" * 30)
-        print(f"WIDTH:       {params.WIDTH}")
-        print(f"HEIGHT:      {params.HEIGHT}")
-        print(f"ENTRY:       {params.ENTRY}")
-        print(f"EXIT:        {params.EXIT}")
-        print(f"OUTPUT_FILE: {params.OUTPUT_FILE}")
-        print(f"PERFECT:     {params.PERFECT}")
-        print(f"SEED:        {params.SEED}")
-
-    except FileNotFoundError:
-        print(f"Error: no se encuentra el archivo '{config_path}'.")
-
-    except ValidationError as error:
-        print("Error: la configuración no es válida.")
-        print(error)
-
-    except (ValueError, OSError) as error:
-        print(f"Error al leer la configuración: {error}")
-
-
-if __name__ == "__main__":
-    main()
