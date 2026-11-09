@@ -2,7 +2,8 @@
 from typing import Any, Optional
 
 from pydantic import (
-    BaseModel, ConfigDict, Field, field_validator, model_validator
+    BaseModel, ConfigDict, Field, ValidationError, field_validator,
+    model_validator
 )
 
 
@@ -65,3 +66,20 @@ def read_config(path: str) -> dict[str, str]:
             key, value = line.split("=", 1)
             data[key.strip()] = value.strip()
     return data
+
+
+def load_config(path: str) -> MazeParameters:
+    """Read and validate the config file.
+
+    Raises OSError if the file cannot be read, and ValueError with a
+    readable message if its content is not valid.
+    """
+    try:
+        return MazeParameters.model_validate(read_config(path))
+    except ValidationError as error:
+        lines = ["invalid configuration"]
+        for problem in error.errors():
+            field = ".".join(str(part) for part in problem["loc"]) or "config"
+            message = problem["msg"].removeprefix("Value error, ")
+            lines.append(f"  {field}: {message}")
+        raise ValueError("\n".join(lines)) from None

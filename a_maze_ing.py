@@ -2,9 +2,7 @@
 import random
 import sys
 
-from pydantic import ValidationError
-
-from config_parser import MazeParameters, read_config
+from config_parser import MazeParameters, load_config
 from display import run_menu
 from mazegen.generator import MazeGenerator
 from mazegen.solver import solve_bfs
@@ -53,13 +51,9 @@ if len(sys.argv) != 2:
 config_path = sys.argv[1]
 
 try:
-    params = MazeParameters.model_validate(read_config(config_path))
+    params = load_config(config_path)
 except OSError as error:
     print(f"Error: cannot read '{config_path}': {error.strerror}")
-    sys.exit(1)
-except ValidationError as error:
-    print("Error: invalid configuration")
-    print(error)
     sys.exit(1)
 except ValueError as error:
     print(f"Error: {error}")
