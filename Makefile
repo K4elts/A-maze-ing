@@ -1,4 +1,4 @@
-.PHONY: install run debug clean lint lint-strict
+.PHONY: install run debug clean lint lint-strict build
 
 PYTHON := python3
 VENV := .venv
@@ -36,3 +36,7 @@ lint:
 lint-strict:
 	$(BIN)/flake8 $(SRC) --exclude $(VENV)
 	$(BIN)/mypy $(SRC) --exclude '\$(VENV)' --strict
+
+# Build the reusable mazegen package (.whl)
+build:
+	$(BIN)/python -m build --wheel --outdir .
