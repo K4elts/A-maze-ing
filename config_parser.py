@@ -64,7 +64,12 @@ def read_config(path: str) -> dict[str, str]:
                     f"line {number}: expected KEY=VALUE, got '{line}'"
                 )
             key, value = line.split("=", 1)
-            data[key.strip()] = value.strip()
+            key = key.strip()
+            if key in data:
+                raise ValueError(
+                    f"line {number}: '{key}' appears more than once"
+                )
+            data[key] = value.strip()
     return data
 
 
