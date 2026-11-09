@@ -5,9 +5,12 @@ NORTH: int = 1
 EAST: int = 2
 SOUTH: int = 4
 WEST: int = 8
+ALL_WALLS: int = 15
 
 RESET: str = "\033[0m"
 CLEAR_SCREEN: str = "\033[2J\033[H"
+ENTRY_COLOR: str = "\033[1;92m"  # bold green
+EXIT_COLOR: str = "\033[1;91m"  # bold red
 
 WALL_COLORS: list[str] = [
     "\033[97m",  # white
@@ -65,12 +68,13 @@ def draw_maze(
 
     Each cell draws only its north and west walls, so shared walls are
     drawn once. The last column adds its east wall and the last row its
-    south wall. All coordinates use (row, col).
+    south wall. Fully closed cells (the "42" pattern) are filled with the
+    wall colour. All coordinates use (row, col).
 
     Args:
         maze: The maze as a list of rows; each cell is a number from 0 to 15.
-        entry: Entry coordinates (row, col), drawn as "E".
-        exit_cell: Exit coordinates (row, col), drawn as "X".
+        entry: Entry coordinates (row, col), drawn as a green "E".
+        exit_cell: Exit coordinates (row, col), drawn as a red "X".
         path: Cells of the path, drawn with a coloured background;
             an empty set hides it.
         wall_color: ANSI code used to colour the walls.
@@ -106,16 +110,18 @@ def draw_maze(
             position = (row_idx, col_idx)
 
             if position == entry:
-                label = " E "
+                label = ENTRY_COLOR + " E "
             elif position == exit_cell:
-                label = " X "
+                label = EXIT_COLOR + " X "
+            elif cell == ALL_WALLS:
+                label = wall_color + "███"
             else:
                 label = "   "
 
             if position in on_path:
                 inside = path_color + label + RESET
             else:
-                inside = label
+                inside = label + RESET
 
             if cell & WEST:
                 middle += wall_v + inside
@@ -214,7 +220,7 @@ def run_menu(
 
 
 if __name__ == "__main__":
-    test_maze = [[9, 5, 3], [12, 5, 6]]
+    test_maze = [[9, 5, 3], [12, 5, 6], [15, 15, 15]]
 
     def same_maze() -> tuple[list[list[int]], str]:
         """Return the same test maze, to try the menu without a generator."""
