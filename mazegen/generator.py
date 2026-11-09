@@ -24,9 +24,10 @@ OPPOSITE = {
 
 
 class MazeGenerator:
-    def __init__(self, height: int, width: int):
+    def __init__(self, height: int, width: int, perfect: bool):
         self.height: int = height
         self.width: int = width
+        self.perfect: bool = perfect
         self.maze: list[list[int]] = [
             [ALL_WALLS for _ in range(width)]
             for _ in range(height)
@@ -62,7 +63,31 @@ class MazeGenerator:
                 stack.append((new_row, new_col))
             else:
                 stack.pop()
+
+        if not self.perfect:
+            self.remove_extra_walls()
         return self.maze
+
+    def remove_extra_walls(self, probability: float = 0.2) -> None:
+        for row in range(self.height):
+            for col in range(self.width):
+                # Comprobar la pared este
+                if col < self.width - 1:
+                    if (
+                        self.maze[row][col] & EAST
+                        and random.random() < probability
+                    ):
+                        self.maze[row][col] &= ~EAST
+                        self.maze[row][col + 1] &= ~WEST
+
+                # Comprobar la pared sur
+                if row < self.height - 1:
+                    if (
+                        self.maze[row][col] & SOUTH
+                        and random.random() < probability
+                    ):
+                        self.maze[row][col] &= ~SOUTH
+                        self.maze[row + 1][col] &= ~NORTH
 
 
 # ---------------- CHECK -----------------------

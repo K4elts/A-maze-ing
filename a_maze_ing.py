@@ -30,7 +30,11 @@ def build_maze(
         RuntimeError: If there is no path from the entry to the exit.
         OSError: If the output file cannot be written.
     """
-    generator = MazeGenerator(height=params.HEIGHT, width=params.WIDTH)
+    generator = MazeGenerator(
+        height=params.HEIGHT,
+        width=params.WIDTH,
+        perfect=params.PERFECT
+    )
     maze = generator.generate()
 
     cells = solve_bfs(generator, entry, exit_cell)
