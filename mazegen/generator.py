@@ -94,7 +94,7 @@ class MazeGenerator:
                         self.maze[row][col] & EAST
                         and (row, col) not in self.pattern
                         and (row, col + 1) not in self.pattern
-                        and random.random() < probability
+                        and self.rng.random() < probability
                     ):
                         self.maze[row][col] &= ~EAST
                         self.maze[row][col + 1] &= ~WEST
@@ -105,7 +105,7 @@ class MazeGenerator:
                         self.maze[row][col] & SOUTH
                         and (row, col) not in self.pattern
                         and (row + 1, col) not in self.pattern
-                        and random.random() < probability
+                        and self.rng.random() < probability
                     ):
                         self.maze[row][col] &= ~SOUTH
                         self.maze[row + 1][col] &= ~NORTH

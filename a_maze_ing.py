@@ -1,5 +1,4 @@
 '''MAIN PROGRAM: READS THE CONFIG, BUILDS THE MAZE AND SHOWS IT'''
-import random
 import sys
 
 from config_parser import MazeParameters, load_config
@@ -14,6 +13,7 @@ def build_maze(
     params: MazeParameters,
     entry: tuple[int, int],
     exit_cell: tuple[int, int],
+    seed: int | None,
 ) -> tuple[list[list[int]], str]:
     """Generate a maze, solve it and write it to the output file.
 
@@ -21,6 +21,7 @@ def build_maze(
         params: The validated configuration.
         entry: Entry coordinates (row, col).
         exit_cell: Exit coordinates (row, col).
+        seed: Random seed for this maze, or None for a random one.
 
     Returns:
         The maze (a list of rows) and its shortest path as letters.
@@ -33,7 +34,7 @@ def build_maze(
         height=params.HEIGHT,
         width=params.WIDTH,
         perfect=params.PERFECT,
-        seed=params.SEED
+        seed=seed
     )
     maze = generator.generate()
 
@@ -61,20 +62,20 @@ except ValueError as error:
     print(f"Error: {error}")
     sys.exit(1)
 
-if params.SEED is not None:
-    random.seed(params.SEED)
-
 entry = (params.ENTRY[1], params.ENTRY[0])
 exit_cell = (params.EXIT[1], params.EXIT[0])
 
 
 def regenerate() -> tuple[list[list[int]], str]:
-    """Build a new maze with the same configuration."""
-    return build_maze(params, entry, exit_cell)
+    """Build a new random maze with the same configuration.
+
+    The seed is only used for the first maze, so every new one is different.
+    """
+    return build_maze(params, entry, exit_cell, None)
 
 
 try:
-    maze, solution = regenerate()
+    maze, solution = build_maze(params, entry, exit_cell, params.SEED)
 except OSError as error:
     print(f"Error: cannot write '{params.OUTPUT_FILE}': {error.strerror}")
     sys.exit(1)
