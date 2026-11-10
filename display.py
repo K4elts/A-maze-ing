@@ -9,7 +9,7 @@ ALL_WALLS: int = 15
 
 RESET: str = "\033[0m"
 CLEAR_SCREEN: str = "\033[2J\033[H"
-ENTRY_COLOR: str = "\033[1;92m"  # bold green
+ENTRY_COLOR: str = "\033[1;97m"  # bold white
 EXIT_COLOR: str = "\033[1;91m"  # bold red
 PATTERN_COLOR: str = "\033[93m"  # yellow, for the "42" cells
 
