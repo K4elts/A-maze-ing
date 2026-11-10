@@ -22,7 +22,7 @@ class MazeParameters(BaseModel):
     ENTRY: tuple[int, int] = Field(...)
     EXIT: tuple[int, int] = Field(...)
     OUTPUT_FILE: str = Field(..., min_length=1)
-    PERFECT: bool = Field(...)
+    PERFECT: bool = Field(False)
     SEED: Optional[int] = Field(None)
 
     @field_validator("ENTRY", "EXIT", mode="before")

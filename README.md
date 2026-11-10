@@ -79,7 +79,7 @@ lines starting with `#` are ignored.
 | `ENTRY` | yes | Entry coordinates `x,y` (column, row) | `ENTRY=0,0` |
 | `EXIT` | yes | Exit coordinates `x,y`, different from the entry | `EXIT=19,14` |
 | `OUTPUT_FILE` | yes | Name of the output file | `OUTPUT_FILE=maze.txt` |
-| `PERFECT` | yes | `True` for a perfect maze, `False` for a Pac-Man board | `PERFECT=True` |
+| `PERFECT` | no (default `False`) | `True` for a perfect maze, `False` for a Pac-Man board | `PERFECT=True` |
 | `SEED` | no | Random seed: the same seed always gives the same maze | `SEED=42` |
 
 Example:
