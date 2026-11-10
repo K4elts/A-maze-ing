@@ -5,6 +5,7 @@ import sys
 from config_parser import MazeParameters, load_config
 from display import run_menu
 from mazegen.generator import MazeGenerator
+from mazegen.pattern import pattern_cells
 from mazegen.solver import solve_bfs
 from output_writer import path_to_directions, write_maze
 
@@ -80,5 +81,10 @@ except RuntimeError as error:
     print(f"Error: {error}")
     sys.exit(1)
 
+notice = ""
+if pattern_cells(params.HEIGHT, params.WIDTH) is None:
+    notice = "Note: the maze is too small to draw the 42 pattern."
 
-run_menu(maze, entry, exit_cell, solution, regenerate, params.PERFECT)
+run_menu(
+    maze, entry, exit_cell, solution, regenerate, params.PERFECT, notice
+)

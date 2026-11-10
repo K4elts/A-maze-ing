@@ -173,6 +173,7 @@ def run_menu(
     solution: str,
     regenerate: Callable[[], tuple[list[list[int]], str]],
     perfect: bool = True,
+    notice: str = "",
 ) -> None:
     """Draw the maze and let the user interact with it until they quit.
 
@@ -184,6 +185,7 @@ def run_menu(
         regenerate: Function that builds a new maze and returns it
             together with its solution.
         perfect: Whether the maze is perfect, shown in the info line.
+        notice: Optional extra line shown under the info line.
     """
     show_path = False
     color_index = 0
@@ -202,6 +204,8 @@ def run_menu(
         )
         print()
         print(maze_info(maze, solution, perfect))
+        if notice:
+            print(notice)
         print(MENU)
         if message:
             print(message)
