@@ -26,10 +26,17 @@ OPPOSITE = {
 
 
 class MazeGenerator:
-    def __init__(self, height: int, width: int, perfect: bool):
+    def __init__(
+            self,
+            height: int,
+            width: int,
+            perfect: bool,
+            seed: int | None = None
+    ):
         self.height: int = height
         self.width: int = width
         self.perfect: bool = perfect
+        self.rng = random.Random(seed)
         self.maze: list[list[int]] = [
             [ALL_WALLS for _ in range(width)]
             for _ in range(height)
@@ -40,7 +47,6 @@ class MazeGenerator:
         )
 
     def generate(self) -> list[list[int]]:
-        # marca todas las celdas como falso
         visited = [
             [False for _ in range(self.width)]
             for _ in range(self.height)
@@ -64,8 +70,9 @@ class MazeGenerator:
                     and not visited[new_row][new_col]
                 ):
                     neighbours.append((direction, new_row, new_col))
+
             if neighbours:
-                direction, new_row, new_col = random.choice(neighbours)
+                direction, new_row, new_col = self.rng.choice(neighbours)
                 self.maze[row][col] &= ~direction
                 self.maze[new_row][new_col] &= ~OPPOSITE[direction]
                 visited[new_row][new_col] = True
@@ -75,6 +82,7 @@ class MazeGenerator:
 
         if not self.perfect:
             self.remove_extra_walls()
+
         return self.maze
 
     def remove_extra_walls(self, probability: float = 0.2) -> None:

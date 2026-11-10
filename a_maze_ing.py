@@ -32,7 +32,8 @@ def build_maze(
     generator = MazeGenerator(
         height=params.HEIGHT,
         width=params.WIDTH,
-        perfect=params.PERFECT
+        perfect=params.PERFECT,
+        seed=params.SEED
     )
     maze = generator.generate()
 
