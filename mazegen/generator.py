@@ -1,6 +1,8 @@
 '''GENERATES THE MAZE WITH MazeGenerator'''
 import random
 
+from .pattern import pattern_cells
+
 NORTH: int = 1
 EAST: int = 2
 SOUTH: int = 4
@@ -32,6 +34,10 @@ class MazeGenerator:
             [ALL_WALLS for _ in range(width)]
             for _ in range(height)
         ]
+        # celdas del 42 (vacío si el laberinto es demasiado pequeño)
+        self.pattern: set[tuple[int, int]] = (
+            pattern_cells(height, width) or set()
+        )
 
     def generate(self) -> list[list[int]]:
         # marca todas las celdas como falso
@@ -39,6 +45,9 @@ class MazeGenerator:
             [False for _ in range(self.width)]
             for _ in range(self.height)
         ]
+        # el 42 cuenta como visitado: el DFS no entra y queda cerrado
+        for row, col in self.pattern:
+            visited[row][col] = True
         stack = [(0, 0)]
         visited[0][0] = True
 
@@ -75,6 +84,8 @@ class MazeGenerator:
                 if col < self.width - 1:
                     if (
                         self.maze[row][col] & EAST
+                        and (row, col) not in self.pattern
+                        and (row, col + 1) not in self.pattern
                         and random.random() < probability
                     ):
                         self.maze[row][col] &= ~EAST
@@ -84,6 +95,8 @@ class MazeGenerator:
                 if row < self.height - 1:
                     if (
                         self.maze[row][col] & SOUTH
+                        and (row, col) not in self.pattern
+                        and (row + 1, col) not in self.pattern
                         and random.random() < probability
                     ):
                         self.maze[row][col] &= ~SOUTH
