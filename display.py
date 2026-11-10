@@ -11,19 +11,20 @@ RESET: str = "\033[0m"
 CLEAR_SCREEN: str = "\033[2J\033[H"
 ENTRY_COLOR: str = "\033[1;92m"  # bold green
 EXIT_COLOR: str = "\033[1;91m"  # bold red
+PATTERN_COLOR: str = "\033[93m"  # yellow, for the "42" cells
 
 WALL_COLORS: list[str] = [
-    "\033[92m",  # green
+    "\033[95m",  # pink (bright magenta)
     "\033[97m",  # white
     "\033[96m",  # cyan
-    "\033[95m",  # magenta
+    "\033[92m",  # green
     "\033[91m",  # red
 ]
 
 PATH_COLORS: list[str] = [
-    "\033[105m",  # magenta
-    "\033[103m",  # yellow
     "\033[102m",  # green
+    "\033[105m",  # pink (bright magenta)
+    "\033[103m",  # yellow
     "\033[106m",  # cyan
 ]
 
@@ -68,8 +69,8 @@ def draw_maze(
 
     Each cell draws only its north and west walls, so shared walls are
     drawn once. The last column adds its east wall and the last row its
-    south wall. Fully closed cells (the "42" pattern) are filled with the
-    wall colour. All coordinates use (row, col).
+    south wall. Fully closed cells (the "42" pattern) are filled with
+    PATTERN_COLOR. All coordinates use (row, col).
 
     Args:
         maze: The maze as a list of rows; each cell is a number from 0 to 15.
@@ -114,7 +115,7 @@ def draw_maze(
             elif position == exit_cell:
                 label = EXIT_COLOR + " X "
             elif cell == ALL_WALLS:
-                label = wall_color + "███"
+                label = PATTERN_COLOR + "███"
             else:
                 label = "   "
 
