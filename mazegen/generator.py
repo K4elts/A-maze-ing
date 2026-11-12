@@ -82,6 +82,7 @@ class MazeGenerator:
 
         if not self.perfect:
             self.remove_extra_walls()
+            self.reduce_dead_ends(2)
 
         return self.maze
 
@@ -155,3 +156,59 @@ class MazeGenerator:
                     return True
 
         return False
+
+    def count_dead_ends(self) -> int:
+        dead_ends = 0
+
+        for row in range(self.height):
+            for col in range(self.width):
+
+                # Ignorar las celdas del patrón 42
+                if (row, col) in self.pattern:
+                    continue
+
+                # Contar conexiones abiertas
+                walls = self.maze[row][col]
+                exits = 4 - bin(walls).count("1")
+
+                if exits == 1:
+                    dead_ends += 1
+
+        return dead_ends
+
+    def reduce_dead_ends(self, max_dead_ends: int = 2) -> None:
+        while self.count_dead_ends() > max_dead_ends:
+
+            candidates = []
+
+            for row in range(self.height):
+                for col in range(self.width):
+
+                    if (row, col) in self.pattern:
+                        continue
+
+                    walls = self.maze[row][col]
+                    exits = 4 - bin(walls).count("1")
+
+                    if exits == 1:
+                        for direction, (dr, dc) in DIRECTIONS.items():
+                            nr = row + dr
+                            nc = col + dc
+
+                            if (
+                                0 <= nr < self.height
+                                and 0 <= nc < self.width
+                                and self.maze[row][col] & direction
+                                and (nr, nc) not in self.pattern
+                            ):
+                                candidates.append(
+                                    (row, col, direction, nr, nc)
+                                )
+
+            if not candidates:
+                break
+
+            row, col, direction, nr, nc = self.rng.choice(candidates)
+
+            self.maze[row][col] &= ~direction
+            self.maze[nr][nc] &= ~OPPOSITE[direction]
