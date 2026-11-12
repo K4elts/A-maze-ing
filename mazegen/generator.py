@@ -95,6 +95,7 @@ class MazeGenerator:
                         and (row, col) not in self.pattern
                         and (row, col + 1) not in self.pattern
                         and self.rng.random() < probability
+                        and not self.creates_large_open_space(row, col, EAST)
                     ):
                         self.maze[row][col] &= ~EAST
                         self.maze[row][col + 1] &= ~WEST
@@ -106,6 +107,51 @@ class MazeGenerator:
                         and (row, col) not in self.pattern
                         and (row + 1, col) not in self.pattern
                         and self.rng.random() < probability
+                        and not self.creates_large_open_space(row, col, SOUTH)
                     ):
                         self.maze[row][col] &= ~SOUTH
                         self.maze[row + 1][col] &= ~NORTH
+
+    def creates_large_open_space(
+        self,
+        row: int,
+        col: int,
+        direction: int
+    ) -> bool:
+        """
+        Checks if removing a wall creates an open space of 3x3 or larger
+        """
+
+        # Copia temporal del laberinto
+        temp = [line[:] for line in self.maze]
+
+        # Eliminar temporalmente la pared
+        dir_row, dir_col = DIRECTIONS[direction]
+        new_row = row + dir_row
+        new_col = col + dir_col
+
+        temp[row][col] &= ~direction
+        temp[new_row][new_col] &= ~OPPOSITE[direction]
+
+        # Comprobar bloques de 3x3
+        for r in range(self.height - 2):
+            for c in range(self.width - 2):
+
+                open_space = True
+
+                for dr in range(3):
+                    for dc in range(3):
+                        current = temp[r + dr][c + dc]
+
+                        # Comprobar conexión horizontal
+                        if dc < 2 and current & EAST:
+                            open_space = False
+
+                        # Comprobar conexión vertical
+                        if dr < 2 and current & SOUTH:
+                            open_space = False
+
+                if open_space:
+                    return True
+
+        return False
