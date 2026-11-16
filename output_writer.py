@@ -1,6 +1,3 @@
-'''WRITES THE MAZE TO THE OUTPUT FILE'''
-
-
 def path_to_directions(path: list[tuple[int, int]]) -> str:
     """
     Converts a list of maze path coordinates into a string of movement
@@ -53,17 +50,35 @@ def write_maze(
     exit_cell: tuple[int, int],
     solution: str,
 ) -> None:
-    """Write the maze, its entry, exit and shortest path to a file.
+    """
+    Writes the generated maze, its entry and exit coordinates, and
+    its shortest solution path to an output file.
 
-    Inside the program coordinates are (row, col), but the output file
-    uses "x,y" (column first), so they are written the other way round.
+    The maze is stored as hexadecimal values, with each cell
+    represented by a single character. The entry and exit coordinates
+    are converted from (row, col) to (x, y) format (column first)
+    before being written to the file.
+
+    The output file contains the following sections:
+        1. Maze grid represented by hexadecimal values.
+        2. Entry coordinates in "x,y" format.
+        3. Exit coordinates in "x,y" format.
+        4. Shortest path represented as a sequence of direction letters.
 
     Args:
-        path: Name of the output file.
-        maze: The maze as a list of rows; each cell is a number from 0 to 15.
-        entry: Entry coordinates (row, col).
-        exit_cell: Exit coordinates (row, col).
-        solution: Shortest path from entry to exit, e.g. "EESN".
+        path (str): Path or name of the output file.
+        maze (list[list[int]]): The maze represented as a list of rows,
+            where each cell is an integer from 0 to 15.
+        entry (tuple[int, int]): Entry coordinates (row, col).
+        exit_cell (tuple[int, int]): Exit coordinates (row, col).
+        solution (str): Shortest path from entry to exit, represented
+            as a sequence of direction letters (e.g. "EESN").
+
+    Returns:
+        None
+
+    Raises:
+        OSError: If the output file cannot be created or written.
     """
     with open(path, "w", encoding="utf-8") as file:
         for row in maze:

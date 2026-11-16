@@ -1,4 +1,3 @@
-'''GENERATES THE MAZE WITH MazeGenerator'''
 import random
 
 from .pattern import pattern_cells
@@ -47,11 +46,26 @@ class MazeGenerator:
         )
 
     def generate(self) -> list[list[int]]:
+        """
+        Generates a maze using a randomized depth-first search algorithm.
+
+        The algorithm explores the maze starting from the top-left cell (0, 0),
+        using a stack to perform depth-first traversal. At each step, it
+        randomly selects an unvisited neighbouring cell and removes the wall
+        between them.
+        Backtracking occurs when no unvisited neighbours remain.
+
+        If the maze is not required to be perfect, additional walls are removed
+        and dead ends are reduced after the initial generation.
+
+        Returns:
+            list[list[int]]: A 2D matrix representing the generated maze,
+            where each cell encodes its remaining walls as a bitmask.
+        """
         visited = [
             [False for _ in range(self.width)]
             for _ in range(self.height)
         ]
-        # el 42 cuenta como visitado: el DFS no entra y queda cerrado
         for row, col in self.pattern:
             visited[row][col] = True
         stack = [(0, 0)]
@@ -60,7 +74,7 @@ class MazeGenerator:
         while stack:
             row, col = stack[-1]
             neighbours = []
-            # comprueba que las celdas vecinas buscadas estan disponibles
+
             for direction, (dir_row, dir_col) in DIRECTIONS.items():
                 new_row = row + dir_row
                 new_col = col + dir_col
@@ -86,10 +100,30 @@ class MazeGenerator:
 
         return self.maze
 
-    def remove_extra_walls(self, probability: float = 0.2) -> None:
+    def remove_extra_walls(
+            self,
+            probability: float = 0.2
+    ) -> None:
+        """
+        Removes additional walls from the maze to create alternative paths
+        and increase connectivity.
+
+        Iterates through all cells and randomly removes walls between adjacent
+        cells based on the given probability. Walls separating cells that
+        belong to the predefined pattern are preserved. Additionally, walls are
+        only removed if doing so does not create an excessively large open
+        space.
+
+        Args:
+            probability (float): Probability of removing each eligible wall.
+                Defaults to 0.2.
+
+        Returns:
+            None
+        """
         for row in range(self.height):
             for col in range(self.width):
-                # Comprobar la pared este
+
                 if col < self.width - 1:
                     if (
                         self.maze[row][col] & EAST
@@ -101,7 +135,6 @@ class MazeGenerator:
                         self.maze[row][col] &= ~EAST
                         self.maze[row][col + 1] &= ~WEST
 
-                # Comprobar la pared sur
                 if row < self.height - 1:
                     if (
                         self.maze[row][col] & SOUTH
@@ -120,13 +153,24 @@ class MazeGenerator:
         direction: int
     ) -> bool:
         """
-        Checks if removing a wall creates an open space of 3x3 or larger
-        """
+        Checks whether removing a wall between two adjacent cells creates
+        a fully open 3x3 area anywhere in the maze.
 
-        # Copia temporal del laberinto
+        Creates a temporary copy of the maze and removes the specified wall
+        without modifying the original maze. It then checks all possible 3x3
+        blocks to determine whether any of them becomes completely open,
+        with no remaining internal walls.
+
+        Args:
+            row (int): Row index of the cell containing the wall.
+            col (int): Column index of the cell containing the wall.
+            direction (int): Direction of the wall to be removed.
+
+        Returns:
+            bool: True if a fully open 3x3 area is found, False otherwise.
+        """
         temp = [line[:] for line in self.maze]
 
-        # Eliminar temporalmente la pared
         dir_row, dir_col = DIRECTIONS[direction]
         new_row = row + dir_row
         new_col = col + dir_col
@@ -134,7 +178,6 @@ class MazeGenerator:
         temp[row][col] &= ~direction
         temp[new_row][new_col] &= ~OPPOSITE[direction]
 
-        # Comprobar bloques de 3x3
         for r in range(self.height - 2):
             for c in range(self.width - 2):
 
@@ -144,11 +187,9 @@ class MazeGenerator:
                     for dc in range(3):
                         current = temp[r + dr][c + dc]
 
-                        # Comprobar conexión horizontal
                         if dc < 2 and current & EAST:
                             open_space = False
 
-                        # Comprobar conexión vertical
                         if dr < 2 and current & SOUTH:
                             open_space = False
 
@@ -158,16 +199,24 @@ class MazeGenerator:
         return False
 
     def count_dead_ends(self) -> int:
+        """
+        Counts the number of dead ends in the maze, excluding cells belonging
+        to the predefined pattern.
+
+        Iterates through all cells and counts those with exactly one open
+        passage, identifying them as dead ends.
+
+        Returns:
+            int: Total number of dead ends in the maze.
+        """
         dead_ends = 0
 
         for row in range(self.height):
             for col in range(self.width):
 
-                # Ignorar las celdas del patrón 42
                 if (row, col) in self.pattern:
                     continue
 
-                # Contar conexiones abiertas
                 walls = self.maze[row][col]
                 exits = 4 - bin(walls).count("1")
 
@@ -177,6 +226,23 @@ class MazeGenerator:
         return dead_ends
 
     def reduce_dead_ends(self, max_dead_ends: int = 2) -> None:
+        """
+        Reduces the number of dead ends in the maze by randomly removing
+        walls adjacent to cells with only one open passage.
+
+        Repeatedly identifies dead-end cells, excluding those belonging to
+        the predefined pattern, and randomly selects a wall separating one
+        of them from an adjacent cell. The selected wall is removed to create
+        an alternative passage. The process continues until the number of
+        dead ends reaches the specified maximum or no valid candidates remain.
+
+        Args:
+            max_dead_ends (int): Maximum number of dead ends allowed in the
+                maze. Defaults to 2.
+
+        Returns:
+            None
+        """
         while self.count_dead_ends() > max_dead_ends:
 
             candidates = []
@@ -191,24 +257,40 @@ class MazeGenerator:
                     exits = 4 - bin(walls).count("1")
 
                     if exits == 1:
-                        for direction, (dr, dc) in DIRECTIONS.items():
-                            nr = row + dr
-                            nc = col + dc
+                        for direction, (
+                            row_offset,
+                            col_offset
+                        ) in DIRECTIONS.items():
+                            neighbour_row = row + row_offset
+                            neighbour_col = col + col_offset
 
                             if (
-                                0 <= nr < self.height
-                                and 0 <= nc < self.width
+                                0 <= neighbour_row < self.height
+                                and 0 <= neighbour_col < self.width
                                 and self.maze[row][col] & direction
-                                and (nr, nc) not in self.pattern
+                                and (neighbour_row, neighbour_col) not in
+                                self.pattern
                             ):
                                 candidates.append(
-                                    (row, col, direction, nr, nc)
+                                    (
+                                        row,
+                                        col,
+                                        direction,
+                                        neighbour_row,
+                                        neighbour_col
+                                    )
                                 )
 
             if not candidates:
                 break
 
-            row, col, direction, nr, nc = self.rng.choice(candidates)
+            (
+                row,
+                col,
+                direction,
+                neighbour_row,
+                neighbour_col
+            ) = self.rng.choice(candidates)
 
             self.maze[row][col] &= ~direction
-            self.maze[nr][nc] &= ~OPPOSITE[direction]
+            self.maze[neighbour_row][neighbour_col] &= ~OPPOSITE[direction]

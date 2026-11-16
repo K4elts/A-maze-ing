@@ -1,4 +1,3 @@
-'''MAIN PROGRAM: READS THE CONFIG, BUILDS THE MAZE AND SHOWS IT'''
 import sys
 
 from config_parser import MazeParameters, load_config
@@ -15,20 +14,33 @@ def build_maze(
     exit_cell: tuple[int, int],
     seed: int | None,
 ) -> tuple[list[list[int]], str]:
-    """Generate a maze, solve it and write it to the output file.
+    """
+    Generates a maze, finds the shortest path between the entry and
+    exit using Breadth-First Search (BFS), and saves the result
+    to the configured output file.
+
+    The maze is generated according to the provided configuration
+    parameters and random seed. Once generated, the shortest path
+    is calculated and converted into a sequence of direction letters.
 
     Args:
-        params: The validated configuration.
-        entry: Entry coordinates (row, col).
-        exit_cell: Exit coordinates (row, col).
-        seed: Random seed for this maze, or None for a random one.
+        params (MazeParameters): Validated configuration containing
+            the maze dimensions, generation type and output file path.
+        entry (tuple[int, int]): Starting coordinates (row, col).
+        exit_cell (tuple[int, int]): Destination coordinates (row, col).
+        seed (int | None): Random seed used for maze generation.
+            If None, a random seed is used.
 
     Returns:
-        The maze (a list of rows) and its shortest path as letters.
+        tuple[list[list[int]], str]: A tuple containing the generated
+            maze as a list of rows and its shortest path represented
+            as a sequence of direction letters.
 
     Raises:
-        RuntimeError: If there is no path from the entry to the exit.
-        OSError: If the output file cannot be written.
+        RuntimeError: If no valid path exists between the entry
+            and exit.
+        OSError: If the generated maze cannot be written
+            to the output file.
     """
     generator = MazeGenerator(
         height=params.HEIGHT,
@@ -67,9 +79,24 @@ exit_cell = (params.EXIT[1], params.EXIT[0])
 
 
 def regenerate() -> tuple[list[list[int]], str]:
-    """Build a new random maze with the same configuration.
+    """
+    Generates a new maze using the same configuration parameters
+    as the initial maze, but with a different random seed.
 
-    The seed is only used for the first maze, so every new one is different.
+    The original seed is not reused, ensuring that each regenerated
+    maze is randomly generated. The new maze is also solved and
+    saved to the configured output file.
+
+    Returns:
+        tuple[list[list[int]], str]: A tuple containing the newly
+            generated maze as a list of rows and its shortest path
+            represented as a sequence of direction letters.
+
+    Raises:
+        RuntimeError: If no valid path exists between the entry
+            and exit.
+        OSError: If the generated maze cannot be written
+            to the output file.
     """
     return build_maze(params, entry, exit_cell, None)
 

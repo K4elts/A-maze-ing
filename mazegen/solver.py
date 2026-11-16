@@ -1,4 +1,3 @@
-'''SOLVES THE MAZE WITH THE SHORTEST PATH'''
 from .generator import DIRECTIONS, MazeGenerator
 
 
@@ -7,19 +6,25 @@ def solve_bfs(
     start: tuple[int, int] = (0, 0),
     end: tuple[int, int] | None = None
 ) -> list[tuple[int, int]] | None:
-    """Find the shortest path between two cells with a breadth-first search.
+    """
+    Find the shortest path between two cells in a maze using the Breadth-First
+    Search (BFS) algorithm.
 
     BFS visits the cells in layers (first those 1 step away, then 2...),
     so the first time it reaches the end it has found a shortest path.
 
     Args:
-        generator: The maze generator, after calling generate().
-        start: Start cell (row, col). Defaults to the top-left corner.
-        end: End cell (row, col). Defaults to the bottom-right corner.
+        generator (MazeGenerator): The maze generator containing
+            the generated maze and its dimensions.
+        start (tuple[int, int]): The starting cell (row, col).
+            Defaults to the top-left corner.
+        end (tuple[int, int] | None): The destination cell (row, col).
+            Defaults to the bottom-right corner if not specified.
 
     Returns:
-        The list of (row, col) cells from start to end, both included,
-        or None if the end cannot be reached.
+        list[tuple[int, int]] | None: A list of (row, col) coordinates
+        representing the shortest path from start to end, including
+        both endpoints, or None if no valid path exists.
     """
     if end is None:
         end = (generator.height - 1, generator.width - 1)
