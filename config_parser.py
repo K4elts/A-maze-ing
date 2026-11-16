@@ -34,8 +34,8 @@ class MazeParameters(BaseModel):
     """
     model_config = ConfigDict(extra='forbid')
 
-    WIDTH: int = Field(..., ge=1)
-    HEIGHT: int = Field(..., ge=1)
+    WIDTH: int = Field(..., ge=1, le=70)
+    HEIGHT: int = Field(..., ge=1, le=70)
     ENTRY: tuple[int, int] = Field(...)
     EXIT: tuple[int, int] = Field(...)
     OUTPUT_FILE: str = Field(..., min_length=1)
