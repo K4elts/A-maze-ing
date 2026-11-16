@@ -1,4 +1,3 @@
-'''DRAWS THE MAZE IN THE TERMINAL'''
 from typing import Callable
 
 NORTH: int = 1
@@ -33,14 +32,21 @@ def path_cells(
     entry: tuple[int, int],
     solution: str,
 ) -> set[tuple[int, int]]:
-    """Return the cells the path goes through, following its letters.
+    """
+    Calculates the set of maze cells visited by following a path
+    from the given entry point using the specified directions.
+
+    Each letter in the solution represents a movement:
+    N (North), S (South), E (East) or W (West).
 
     Args:
-        entry: Entry coordinates (row, col), where the path starts.
-        solution: Path as letters N, E, S, W, e.g. "EES".
+        entry (tuple[int, int]): Starting coordinates (row, col).
+        solution (str): Sequence of direction letters describing
+            the path to follow (e.g. "EES").
 
     Returns:
-        The set of (row, col) cells visited after each step.
+        set[tuple[int, int]]: A set of (row, col) coordinates
+        representing all cells visited after each movement.
     """
     cells: set[tuple[int, int]] = set()
     row, col = entry
@@ -65,7 +71,9 @@ def draw_maze(
     wall_color: str,
     path_color: str = PATH_COLORS[0],
 ) -> None:
-    """Draw the maze walls, entry, exit and path in the terminal.
+    """
+    Draws the maze in the terminal, displaying its walls, entry point,
+    exit point and, optionally, the solution path using ANSI colours.
 
     Each cell draws only its north and west walls, so shared walls are
     drawn once. The last column adds its east wall and the last row its
@@ -73,13 +81,20 @@ def draw_maze(
     PATTERN_COLOR. All coordinates use (row, col).
 
     Args:
-        maze: The maze as a list of rows; each cell is a number from 0 to 15.
-        entry: Entry coordinates (row, col), drawn as a green "E".
-        exit_cell: Exit coordinates (row, col), drawn as a red "X".
-        path: Cells of the path, drawn with a coloured background;
-            an empty set hides it.
-        wall_color: ANSI code used to colour the walls.
-        path_color: ANSI code used as background for the path.
+        maze (list[list[int]]): The maze represented as a list of rows,
+            where each cell is an integer from 0 to 15 indicating
+            its surrounding walls.
+        entry (tuple[int, int]): Entry coordinates (row, col),
+            displayed as a green "E".
+        exit_cell (tuple[int, int]): Exit coordinates (row, col),
+            displayed as a red "X".
+        path (set[tuple[int, int]]): Set of (row, col) coordinates
+            belonging to the solution path. An empty set hides the path.
+        wall_color (str): ANSI colour code used to draw the maze walls.
+        path_color (str): ANSI background colour code used to highlight
+            the solution path. Defaults to PATH_COLORS[0].
+    Returns:
+        None
     """
     corner = wall_color + "+" + RESET
     wall_h = wall_color + "+---" + RESET
@@ -151,7 +166,22 @@ def draw_maze(
 
 
 def maze_info(maze: list[list[int]], solution: str, perfect: bool) -> str:
-    """Return a short line with the maze size, its type and path length."""
+    """
+    Generates a summary of the maze, including its dimensions, type
+    and solution path length.
+
+    Args:
+        maze (list[list[int]]): The maze represented as a list of rows.
+        solution (str): The solution path represented as a sequence
+            of direction letters.
+        perfect (bool): Indicates whether the maze is a perfect maze.
+            If False, the maze is classified as a Pac-Man maze.
+
+    Returns:
+        str: A formatted string containing the maze dimensions
+        (width x height), its type and the number of steps
+        in the solution path.
+    """
     height = len(maze)
     width = len(maze[0])
     kind = "perfect" if perfect else "Pac-Man"
@@ -176,17 +206,35 @@ def run_menu(
     perfect: bool = True,
     notice: str = "",
 ) -> None:
-    """Draw the maze and let the user interact with it until they quit.
+    """
+    Displays the maze in the terminal and provides an interactive menu
+    that allows the user to modify its appearance and manage its
+    generation until they choose to quit.
+
+    The menu provides options to generate a new maze, toggle the
+    solution path, change the wall colour and change the path colour.
+    User input is handled interactively, with error messages displayed
+    when an invalid option is selected or maze regeneration fails.
 
     Args:
-        maze: The maze as a list of rows; each cell is a number from 0 to 15.
-        entry: Entry coordinates (row, col).
-        exit_cell: Exit coordinates (row, col).
-        solution: Shortest path from entry to exit, e.g. "EES".
-        regenerate: Function that builds a new maze and returns it
-            together with its solution.
-        perfect: Whether the maze is perfect, shown in the info line.
-        notice: Optional extra line shown under the info line.
+        maze (list[list[int]]): The maze represented as a list of rows,
+            where each cell is an integer from 0 to 15 indicating
+            its surrounding walls.
+        entry (tuple[int, int]): Entry coordinates (row, col).
+        exit_cell (tuple[int, int]): Exit coordinates (row, col).
+        solution (str): Shortest path from entry to exit, represented
+            as a sequence of direction letters (e.g. "EES").
+        regenerate (Callable[[], tuple[list[list[int]], str]]): Function
+            that generates a new maze and returns it together with
+            its corresponding solution.
+        perfect (bool): Indicates whether the maze is perfect.
+            Used to display the maze type in the information line.
+            Defaults to True.
+        notice (str): Optional additional message displayed below
+            the maze information line. Defaults to an empty string.
+
+    Returns:
+        None
     """
     show_path = False
     color_index = 0
