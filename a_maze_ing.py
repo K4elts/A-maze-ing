@@ -1,10 +1,8 @@
 import sys
 
 from config_parser import MazeParameters, load_config
+from mazegen import MazeGenerator, pattern_cells, solve_bfs
 from display import run_menu
-from mazegen.generator import MazeGenerator
-from mazegen.pattern import pattern_cells
-from mazegen.solver import solve_bfs
 from output_writer import path_to_directions, write_maze
 
 
@@ -52,30 +50,11 @@ def build_maze(
 
     cells = solve_bfs(generator, entry, exit_cell)
     if cells is None:
-        raise RuntimeError("no path from the entry to the exit")
+        raise RuntimeError("No path from the entry to the exit")
     solution = path_to_directions(cells)
 
     write_maze(params.OUTPUT_FILE, maze, entry, exit_cell, solution)
     return maze, solution
-
-
-if len(sys.argv) != 2:
-    print("Usage: python3 a_maze_ing.py <config_file>")
-    sys.exit(1)
-
-config_path = sys.argv[1]
-
-try:
-    params = load_config(config_path)
-except OSError as error:
-    print(f"Error: cannot read '{config_path}': {error.strerror}")
-    sys.exit(1)
-except ValueError as error:
-    print(f"Error: {error}")
-    sys.exit(1)
-
-entry = (params.ENTRY[1], params.ENTRY[0])
-exit_cell = (params.EXIT[1], params.EXIT[0])
 
 
 def regenerate() -> tuple[list[list[int]], str]:
@@ -101,19 +80,38 @@ def regenerate() -> tuple[list[list[int]], str]:
     return build_maze(params, entry, exit_cell, None)
 
 
-try:
-    maze, solution = build_maze(params, entry, exit_cell, params.SEED)
-except OSError as error:
-    print(f"Error: cannot write '{params.OUTPUT_FILE}': {error.strerror}")
-    sys.exit(1)
-except RuntimeError as error:
-    print(f"Error: {error}")
-    sys.exit(1)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 a_maze_ing.py <config_file>")
+        sys.exit(1)
 
-notice = ""
-if pattern_cells(params.HEIGHT, params.WIDTH) is None:
-    notice = "Note: the maze is too small to draw the 42 pattern."
+    config_path = sys.argv[1]
 
-run_menu(
-    maze, entry, exit_cell, solution, regenerate, params.PERFECT, notice
-)
+    try:
+        params = load_config(config_path)
+    except OSError as error:
+        print(f"Error: cannot read '{config_path}': {error.strerror}")
+        sys.exit(1)
+    except ValueError as error:
+        print(f"Error: {error}")
+        sys.exit(1)
+
+    entry = (params.ENTRY[1], params.ENTRY[0])
+    exit_cell = (params.EXIT[1], params.EXIT[0])
+
+    try:
+        maze, solution = build_maze(params, entry, exit_cell, params.SEED)
+    except OSError as error:
+        print(f"Error: cannot write '{params.OUTPUT_FILE}': {error.strerror}")
+        sys.exit(1)
+    except RuntimeError as error:
+        print(f"Error: {error}")
+        sys.exit(1)
+
+    notice = ""
+    if pattern_cells(params.HEIGHT, params.WIDTH) is None:
+        notice = "Note: the maze is too small to draw the 42 pattern."
+
+    run_menu(
+        maze, entry, exit_cell, solution, regenerate, params.PERFECT, notice
+    )
