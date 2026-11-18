@@ -81,39 +81,50 @@ def regenerate() -> tuple[list[list[int]], str]:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python3 a_maze_ing.py <config_file>")
-        print("or")
-        print("Usage: make run")
-        sys.exit(1)
-
-    config_path = sys.argv[1]
-
     try:
-        params = load_config(config_path)
-    except OSError as error:
-        print(f"Error: cannot read '{config_path}': {error.strerror}")
-        sys.exit(1)
-    except ValueError as error:
-        print(f"Error: {error}")
-        sys.exit(1)
+        if len(sys.argv) != 2:
+            print("Usage: python3 a_maze_ing.py <config_file>")
+            print("or")
+            print("Usage: make run")
+            sys.exit(1)
 
-    entry = (params.ENTRY[1], params.ENTRY[0])
-    exit_cell = (params.EXIT[1], params.EXIT[0])
+        config_path = sys.argv[1]
 
-    try:
-        maze, solution = build_maze(params, entry, exit_cell, params.SEED)
-    except OSError as error:
-        print(f"Error: cannot write '{params.OUTPUT_FILE}': {error.strerror}")
-        sys.exit(1)
-    except RuntimeError as error:
-        print(f"Error: {error}")
-        sys.exit(1)
+        try:
+            params = load_config(config_path)
+        except OSError as error:
+            print(f"Error: cannot read '{config_path}': {error.strerror}")
+            sys.exit(1)
+        except ValueError as error:
+            print(f"Error: {error}")
+            sys.exit(1)
 
-    notice = ""
-    if pattern_cells(params.HEIGHT, params.WIDTH) is None:
-        notice = "Note: the maze is too small to draw the 42 pattern."
+        entry = (params.ENTRY[1], params.ENTRY[0])
+        exit_cell = (params.EXIT[1], params.EXIT[0])
 
-    run_menu(
-        maze, entry, exit_cell, solution, regenerate, params.PERFECT, notice
-    )
+        try:
+            maze, solution = build_maze(params, entry, exit_cell, params.SEED)
+        except OSError as error:
+            print(
+                f"Error: cannot write '{params.OUTPUT_FILE}': {error.strerror}"
+                )
+            sys.exit(1)
+        except RuntimeError as error:
+            print(f"Error: {error}")
+            sys.exit(1)
+
+        notice = ""
+        if pattern_cells(params.HEIGHT, params.WIDTH) is None:
+            notice = "Note: the maze is too small to draw the 42 pattern."
+
+        run_menu(
+            maze,
+            entry,
+            exit_cell,
+            solution,
+            regenerate,
+            params.PERFECT,
+            notice
+        )
+    except KeyboardInterrupt:
+        print("Stoped by the user")
