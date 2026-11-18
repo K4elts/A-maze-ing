@@ -263,8 +263,7 @@ def run_menu(
         try:
             choice = input("Choice? (1-5): ").strip()
         except (EOFError, KeyboardInterrupt):
-            print()
-            break
+            raise
 
         if choice == "1":
             try:

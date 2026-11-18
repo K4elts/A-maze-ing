@@ -127,4 +127,5 @@ if __name__ == "__main__":
             notice
         )
     except KeyboardInterrupt:
-        print("Stoped by the user")
+        print()
+        print("Stopped by the user")
