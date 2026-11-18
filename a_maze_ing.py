@@ -83,6 +83,8 @@ def regenerate() -> tuple[list[list[int]], str]:
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 a_maze_ing.py <config_file>")
+        print("or")
+        print("Usage: make run")
         sys.exit(1)
 
     config_path = sys.argv[1]

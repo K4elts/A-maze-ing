@@ -39,7 +39,6 @@ def solve_bfs(
         row, col = queue[index]
         index += 1
 
-        # ¿Hemos llegado a la salida?
         if (row, col) == end:
             path: list[tuple[int, int]] = []
             current: tuple[int, int] | None = end
@@ -50,24 +49,20 @@ def solve_bfs(
 
             return path[::-1]
 
-        # Explorar las celdas vecinas
         for direction, (dir_row, dir_col) in DIRECTIONS.items():
             new_row = row + dir_row
             new_col = col + dir_col
             neighbour = (new_row, new_col)
 
-            # Comprobar límites
             valid_row = 0 <= new_row < generator.height
             valid_col = 0 <= new_col < generator.width
 
             if not (valid_row and valid_col):
                 continue
 
-            # No atravesar paredes
             if generator.maze[row][col] & direction:
                 continue
 
-            # No visitar celdas repetidas
             if neighbour in visited:
                 continue
 

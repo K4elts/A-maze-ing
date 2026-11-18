@@ -40,7 +40,6 @@ class MazeGenerator:
             [ALL_WALLS for _ in range(width)]
             for _ in range(height)
         ]
-        # celdas del 42 (vacío si el laberinto es demasiado pequeño)
         self.pattern: set[tuple[int, int]] = (
             pattern_cells(height, width) or set()
         )
