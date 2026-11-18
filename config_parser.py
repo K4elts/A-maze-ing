@@ -39,7 +39,7 @@ class MazeParameters(BaseModel):
     ENTRY: tuple[int, int] = Field(...)
     EXIT: tuple[int, int] = Field(...)
     OUTPUT_FILE: str = Field(..., min_length=1)
-    PERFECT: bool = Field(False)
+    PERFECT: bool = Field(...)
     SEED: Optional[int] = Field(None)
 
     @field_validator("ENTRY", "EXIT", mode="before")
@@ -149,7 +149,7 @@ def read_config(path: str) -> dict[str, str]:
                     f"line {number}: expected KEY=VALUE, got '{line}'"
                 )
             key, value = line.split("=", 1)
-            key = key.strip()
+            key = key.strip().upper()
             if key in data:
                 raise ValueError(
                     f"line {number}: '{key}' appears more than once"
