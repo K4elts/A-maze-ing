@@ -126,6 +126,6 @@ if __name__ == "__main__":
             params.PERFECT,
             notice
         )
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
         print()
         print("Stopped by the user")
