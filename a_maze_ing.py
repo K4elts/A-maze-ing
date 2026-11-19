@@ -57,14 +57,19 @@ def build_maze(
     return maze, solution
 
 
+regenerations = 0
+
+
 def regenerate() -> tuple[list[list[int]], str]:
     """
-    Generates a new maze using the same configuration parameters
-    as the initial maze, but with a different random seed.
+    Generates the next maze using the same configuration parameters
+    as the initial maze.
 
-    The original seed is not reused, ensuring that each regenerated
-    maze is randomly generated. The new maze is also solved and
-    saved to the configured output file.
+    With a SEED in the config file, each new maze uses the next seed
+    (SEED + 1, SEED + 2...), so the same SEED always gives the same
+    sequence of mazes, and every maze of the sequence is different.
+    Without SEED, every maze is randomly generated. The new maze is
+    also solved and saved to the configured output file.
 
     Returns:
         tuple[list[list[int]], str]: A tuple containing the newly
@@ -77,7 +82,13 @@ def regenerate() -> tuple[list[list[int]], str]:
         OSError: If the generated maze cannot be written
             to the output file.
     """
-    return build_maze(params, entry, exit_cell, None)
+    global regenerations
+    regenerations += 1
+    if params.SEED is None:
+        seed = None
+    else:
+        seed = params.SEED + regenerations
+    return build_maze(params, entry, exit_cell, seed)
 
 
 if __name__ == "__main__":
