@@ -12,14 +12,9 @@ pip install mazegen-1.0.0-py3-none-any.whl
 ## Basic example
 
 ```python
-import random
+from mazegen import MazeGenerator, solve_bfs
 
-from mazegen.generator import MazeGenerator
-from mazegen.solver import solve_bfs
-
-random.seed(42)  # optional: the same seed always gives the same maze
-
-generator = MazeGenerator(height=15, width=20, perfect=True)
+generator = MazeGenerator(height=15, width=20, perfect=True, seed=42)
 maze = generator.generate()
 
 path = solve_bfs(generator, (0, 0), (14, 19))
@@ -28,12 +23,14 @@ print(path)
 
 ## Parameters
 
-`MazeGenerator(height, width, perfect)`:
+`MazeGenerator(height, width, perfect, seed=None)`:
 
 - `height`: number of rows (at least 1).
 - `width`: number of columns (at least 1).
 - `perfect`: `True` for a perfect maze (exactly one path between any two
   cells), `False` for a Pac-Man-like board with loops and few dead ends.
+- `seed`: optional. The same seed always gives the same maze; `None` (the
+  default) gives a different maze every time.
 
 ## The generated structure
 
