@@ -92,7 +92,7 @@ case (`WIDTH` or `width`).
 | `HEIGHT` | yes | Maze height in cells, from 1 to 70 | `HEIGHT=15` |
 | `ENTRY` | yes | Entry coordinates `x,y` (column, row) | `ENTRY=0,0` |
 | `EXIT` | yes | Exit coordinates `x,y`, different from the entry | `EXIT=19,14` |
-| `OUTPUT_FILE` | yes | Name of the output file | `OUTPUT_FILE=maze.txt` |
+| `OUTPUT_FILE` | yes | Name of the output file (`.txt`, not `config.txt`) | `OUTPUT_FILE=maze.txt` |
 | `PERFECT` | yes | `True` for a perfect maze, `False` for a Pac-Man board | `PERFECT=False` |
 | `SEED` | no | Random seed: the same seed always gives the same mazes | `SEED=42` |
 
@@ -121,7 +121,7 @@ and exits without crashing if:
   `HEIGHT=100`, `PERFECT=maybe`, `ENTRY=0`);
 - the entry or the exit is outside the maze, inside the "42", or both are
   the same cell;
-- the output file cannot be written.
+- the output file is not a `.txt` file, is `config.txt`, or cannot be written.
 
 When several values are wrong, all the errors are shown at once.
 

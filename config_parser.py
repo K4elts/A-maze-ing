@@ -74,6 +74,28 @@ class MazeParameters(BaseModel):
             return (parts[0].strip(), parts[1].strip())
         return value
 
+    @field_validator("OUTPUT_FILE")
+    @classmethod
+    def check_output_file(cls, value: str) -> str:
+        """
+        Only allows .txt output files, so no code file can be overwritten.
+
+        Args:
+            value (str): The output file name from the config file.
+
+        Returns:
+            str: The same file name, if it ends in .txt.
+
+        Raises:
+            ValueError: If the file name does not end in .txt, or if
+                it is the default config file (config.txt).
+        """
+        if not value.lower().endswith(".txt"):
+            raise ValueError("must be a .txt file, e.g. maze.txt")
+        elif value.lower() == "config.txt":
+            raise ValueError("must not be the config file (config.txt)")
+        return value
+
     @model_validator(mode="after")
     def check_entry_and_exit(self) -> "MazeParameters":
         """
