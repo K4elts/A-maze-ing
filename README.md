@@ -1,107 +1,87 @@
-*This project has been created as part of the 42 curriculum by aliao-tr, plopez-l*
+*This project has been created as part of the 42 curriculum by aliao-tr, plopez-l.*
 
-# Description
+# A-Maze-ing
 
-A-Maze-ing is a maze generator written in Python. It reads a configuration
-file, generates a random maze, finds the shortest path between the entry and
-the exit, writes the result to an output file and shows it in the terminal
-with an interactive menu.
+## Description
 
-Two kinds of maze can be generated:
+**A-Maze-ing** is a maze generator written in Python 3.10+. The program reads a configuration file, generates a random but reproducible maze, computes the shortest path between the entry and the exit, saves the result to a text file and displays it in the terminal with an interactive menu.
 
-- **Perfect** (`PERFECT=True`): there is exactly one path between any two
-  cells, so there are no loops.
-- **Pac-Man board** (`PERFECT=False`): a board usable by a Pac-Man-like
-  game, with many independent routes and almost no dead ends.
+The project supports two generation modes:
 
-Every maze has its outer border closed and coherent walls between
-neighbouring cells: if a cell has its East wall closed, the cell on its right
-has its West wall closed too.
+- **`PERFECT=True`**: a perfect maze, meaning there is exactly one path between the entry and the exit and no loops (equivalent to a spanning tree).
+- **`PERFECT=False`** (default mode): a playable Pac-Man-like board, with all corridors connected, open corners and centre, at least two independent routes and few dead ends.
 
-When the maze is big enough (at least 9 columns and 7 rows), a **"42"** is
-drawn in its centre with fully closed cells. If it does not fit, the maze is
-generated without it and a message is shown.
+In addition, the maze contains the "42" pattern drawn with fully closed cells whenever the size allows it; if it does not fit, a message is printed to the console. The generation logic lives in a reusable package (`mazegen`) that can be installed with `pip` in future projects.
 
-# Instructions
+## Instructions
 
-## Requirements
+### Requirements
 
-- Python 3.10 or later
+- Python 3.10 or newer.
+- Development tools: `flake8`, `mypy` and `build` (installed automatically by `make install`).
+- Working inside a virtual environment is recommended (`make install` creates `.venv`).
 
-## Installation
+### Installation
 
-```
+```bash
 make install
 ```
 
-This creates a virtual environment in `.venv` and installs the dependencies
-listed in `requirements.txt` (`pydantic`, `flake8`, `mypy` and `build`).
+This command creates `.venv`, upgrades `pip` and installs the dependencies from `requirements.txt`.
 
-## Usage
+To install the already generated reusable package in another environment:
 
+```bash
+pip install mazegen-1.0.0-py3-none-any.whl
 ```
-make run
-```
 
-or, with any configuration file:
+### Usage
 
-```
+With the configuration file included in the repository (`config.txt`):
+
+```bash
 python3 a_maze_ing.py config.txt
 ```
 
-## Display and interactive menu
+Or, using the project's virtual environment:
 
-The maze is drawn in the terminal with ASCII characters and ANSI colours:
-
-- walls in pink by default, the entry `E` in white and the exit `X` in red;
-- the "42" cells filled in yellow;
-- the shortest path, when shown, with a green background by default;
-- an info line with the size, the type of maze and the length of the path,
-  e.g. `20x15 | perfect | path: 47 steps`.
-
-| Option | Action |
-|---|---|
-| 1 | Generate a new maze with the same configuration |
-| 2 | Show / hide the shortest path |
-| 3 | Change the wall colour |
-| 4 | Change the path colour |
-| 5 | Quit |
-
-`Ctrl+C` and `Ctrl+D` also quit cleanly, with the message
-`Stopped by the user`.
-
-## Other Makefile rules
-
-| Rule | Action |
-|---|---|
-| `make debug` | Run the program with the `pdb` debugger |
-| `make lint` | Check the code with `flake8` and `mypy` |
-| `make lint-strict` | Same check, with `mypy --strict` |
-| `make build` | Build the reusable `mazegen` package (`.whl`) |
-| `make clean` | Remove caches and build leftovers |
-
-# Configuration file
-
-The configuration file has one `KEY=VALUE` pair per line. Empty lines and
-lines starting with `#` are ignored. Keys can be written in upper or lower
-case (`WIDTH` or `width`).
-
-| Key | Required | Description | Example |
-|---|---|---|---|
-| `WIDTH` | yes | Maze width in cells, from 1 to 70 | `WIDTH=20` |
-| `HEIGHT` | yes | Maze height in cells, from 1 to 70 | `HEIGHT=15` |
-| `ENTRY` | yes | Entry coordinates `x,y` (column, row) | `ENTRY=0,0` |
-| `EXIT` | yes | Exit coordinates `x,y`, different from the entry | `EXIT=19,14` |
-| `OUTPUT_FILE` | yes | Name of the output file (`.txt`, not `config.txt`) | `OUTPUT_FILE=maze.txt` |
-| `PERFECT` | yes | `True` for a perfect maze, `False` for a Pac-Man board | `PERFECT=False` |
-| `SEED` | no | Random seed: the same seed always gives the same mazes | `SEED=42` |
-
-The maximum size of 70 keeps the maze readable in a terminal and quick to
-generate.
-
-Example (the default `config.txt`):
-
+```bash
+make run
 ```
+
+You can also pass any other valid configuration file as the only argument. The program validates the configuration and prints clear error messages if the file is missing, a mandatory key is absent, a line does not follow the `KEY=VALUE` format, numbers are invalid, coordinates are outside the maze or the parameters are inconsistent. It never terminates unexpectedly because of invalid input.
+
+### Interactive menu
+
+Once the maze has been generated and displayed, the terminal menu offers:
+
+1. Regenerate a new maze (the sequence is reproducible if `SEED` is configured).
+2. Show/hide the shortest path from the entry to the exit.
+3. Rotate the wall colours.
+4. Rotate the path colour (extra interaction).
+5. Quit.
+
+The ASCII representation distinguishes the entry (`E`, white), the exit (`X`, red), the cells of the "42" pattern (yellow blocks), the walls and, when enabled, the highlighted solution path.
+
+### Code quality and packaging
+
+```bash
+make lint          # flake8 + mypy with the required options
+make lint-strict   # flake8 + mypy --strict
+make clean         # removes caches and temporary artefacts
+make debug         # runs a_maze_ing.py with pdb
+make build         # rebuilds mazegen-1.0.0-py3-none-any.whl
+```
+
+The repository includes `.gitignore`, `LICENSE.md` (MIT licence, which explicitly allows reuse and distribution) and all the sources needed to rebuild the package with `python -m build` from a clean environment.
+
+## Configuration file
+
+The configuration file is plain text. Every non-empty line follows the `KEY=VALUE` format; lines starting with `#` are comments. Keys are case-insensitive, cannot be repeated and unknown keys are not allowed.
+
+Example configuration file included (`config.txt`):
+
+```text
 WIDTH=20
 HEIGHT=15
 ENTRY=0,0
@@ -111,238 +91,147 @@ PERFECT=False
 #SEED=42
 ```
 
-The file is validated with Pydantic. The program prints a clear error message
-and exits without crashing if:
+| Key | Type | Required | Description | Constraints |
+|---|---|---|---|---|
+| `WIDTH` | integer | yes | Maze width in cells (columns). | `1 <= WIDTH <= 70` |
+| `HEIGHT` | integer | yes | Maze height in cells (rows). | `1 <= HEIGHT <= 70` |
+| `ENTRY` | `x,y` | yes | Entry coordinates, column first and row second. | Inside the maze; different from `EXIT`; cannot overlap the "42" pattern. |
+| `EXIT` | `x,y` | yes | Exit coordinates, column first and row second. | Inside the maze; different from `ENTRY`; cannot overlap the "42" pattern. |
+| `OUTPUT_FILE` | string | yes | Name of the output file. | Must end in `.txt`; cannot be `config.txt`. |
+| `PERFECT` | boolean | yes | `True` generates a perfect maze; `False` generates a Pac-Man-like board. | Valid boolean values (`True`/`False`). |
+| `SEED` | integer | no | Seed used to reproduce exactly the same maze. | If omitted, each run is random. |
 
-- the file does not exist or cannot be read;
-- a line is not `KEY=VALUE`, or a key appears more than once;
-- a key is unknown, or a required key is missing;
-- a value has the wrong type or range (e.g. `WIDTH=hello`, `WIDTH=0`,
-  `HEIGHT=100`, `PERFECT=maybe`, `ENTRY=0`);
-- the entry or the exit is outside the maze, inside the "42", or both are
-  the same cell;
-- the output file is not a `.txt` file, is `config.txt`, or cannot be written.
-
-When several values are wrong, all the errors are shown at once.
+Notes on coordinates: the configuration uses `(x, y)` (column, row), while internally and in the `mazegen` package `(row, col)` (row, column) is used. The conversion is done in `a_maze_ing.py`.
 
 ## Output file
 
-Each cell is written as one hexadecimal digit, where each bit is a closed
-wall: North = 1, East = 2, South = 4, West = 8 (`F` means all four walls are
-closed). The maze is written row by row (`HEIGHT` lines of `WIDTH`
-characters), followed by an empty line, the entry `x,y`, the exit `x,y` and
-the shortest path as letters `N`, `E`, `S`, `W`.
+The file specified by `OUTPUT_FILE` contains:
 
-# Maze generation algorithm
+1. `HEIGHT` lines, each with exactly `WIDTH` hexadecimal digits (one per cell).
+2. An empty line.
+3. The entry coordinates in `x,y` format.
+4. The exit coordinates in `x,y` format.
+5. The shortest path as a sequence of the letters `N`, `E`, `S`, `W`.
 
-## Perfect maze: iterative depth-first search
+All lines end with `\n`. Each hexadecimal digit encodes which walls are **closed**:
 
-We use the **recursive backtracker** algorithm (a randomized depth-first
-search), written with an explicit stack instead of recursion:
+| Bit | Value | Direction |
+|---|---|---|
+| 0 (LSB) | `1` | North |
+| 1 | `2` | East |
+| 2 | `4` | South |
+| 3 | `8` | West |
 
-1. Every cell starts with its four walls closed.
-2. Start at the first cell, mark it as visited and push it on the stack.
-3. Look at the cell on top of the stack. If it has unvisited neighbours,
-   choose one at random, open the wall between both cells (on both sides),
-   mark the neighbour as visited and push it.
-4. If it has no unvisited neighbours, pop it (go back one step).
-5. Repeat until the stack is empty.
+For example, `3` (`0011`) means North and East are closed while South and West are open, and `A` (`1010`) has East and West closed. Shared walls are encoded consistently by both neighbouring cells and the outer border remains closed.
 
-Every cell is visited exactly once and each new cell is joined to the maze
-through exactly one opened wall, so the result is a **spanning tree**: there
-is one and only one path between any two cells, and every cell is reachable.
+The `maze_analyzer.py` script included with the subject can be used to check the resulting file:
+
+```bash
+python3 maze_analyzer.py maze.txt
+```
+
+## Generation algorithm
+
+The algorithm used is **randomized Depth-First Search (DFS)**, also known as *recursive backtracker*, implemented iteratively with an explicit stack:
+
+1. Every cell starts with all four walls closed (`15` / `F`).
+2. The cells of the "42" pattern are marked as already visited and left closed.
+3. Starting from `(0, 0)`, an unvisited neighbour is chosen at random, the shared wall is removed and the traversal moves forward; if there are no neighbours, it backtracks through the stack.
+4. With `PERFECT=True` the process ends here: a spanning tree is obtained, so all accessible cells are connected and there are no loops.
+5. With `PERFECT=False`, extra walls are removed with probability `0.2` to create loops, and dead ends are then reduced to a maximum of 2. Before opening each wall, the generator checks that no fully open `3x3` area appears.
 
 **Why this algorithm?**
 
-- It always produces a perfect maze.
-- It is short and easy to understand and debug.
-- It creates long, winding corridors, which look good and make the maze
-  interesting to solve.
-- Using a stack instead of recursion avoids Python's recursion limit on big
-  mazes.
+- By construction it guarantees full connectivity and, in perfect mode, the absence of loops.
+- It is simple to implement, efficient (each cell is visited once) and easy to explain and defend.
+- It uses its own `random.Random(seed)`, so the same seed reproduces exactly the same maze without depending on the global state of `random`.
+- The initial tree is a clean base on which to add controlled loops for Pac-Man mode while keeping the corridor-size and "42" pattern constraints.
 
-## The "42" pattern
+The shortest path is computed separately with **BFS** (`solve_bfs`), which visits cells layer by layer and therefore returns the first route found to the exit with the minimum number of steps.
 
-The shape of the "42" is drawn as text in `mazegen/pattern.py` (`#` is a
-closed cell), so it is easy to read and to change. It is placed in the centre
-of the maze, with at least one free cell around it.
+## Reusable module (`mazegen`)
 
-Before the depth-first search starts, the "42" cells are marked as
-**already visited**. The algorithm never enters them, so they keep their four
-walls closed, and the rest of the maze is built around them. The free cells
-inside the "42" all have an exit, so no part of the maze is cut off.
+The reusable logic is isolated in the `mazegen` package, made up of:
 
-## Pac-Man mode
+- `mazegen/generator.py`: the `MazeGenerator` class and wall constants.
+- `mazegen/solver.py`: the `solve_bfs` function.
+- `mazegen/pattern.py`: the `pattern_cells` function.
+- `mazegen/__init__.py`: exports the public API.
+- `mazegen/README.md`: short documentation for the package.
 
-When `PERFECT=False`, the perfect maze is generated first and then:
-
-1. `remove_extra_walls` opens inner walls at random (20 % of them), which
-   creates many loops, so there are several independent routes. Before
-   opening a wall, `creates_large_open_space` checks that it would not
-   create an open area of 3x3 cells.
-2. `reduce_dead_ends` opens one more wall in each dead end (a cell with
-   three closed walls), until at most 2 dead ends are left.
-
-The outer border and the "42" cells are never opened. With the default
-size, the result usually has no dead end at all, which `maze_analyzer.py`
-reports as "bonus-grade".
-
-## Randomness and seed
-
-Each `MazeGenerator` has its own random generator (`random.Random(seed)`),
-and all the randomness comes from it, so the same seed always gives the same
-maze.
-
-In the program, the first maze uses the `SEED` of the configuration file.
-For option 1 of the menu, `create_regenerate` creates a second random
-generator from the same `SEED`, which gives a new seed for each regenerated
-maze. So the same `SEED` always shows the same sequence of mazes, and every
-maze of the sequence is different. Without `SEED`, every maze is random.
-
-## Shortest path: breadth-first search
-
-The solver uses **BFS** (breadth-first search). It explores the maze level by
-level from the entry and remembers where each cell was reached from, so the
-first time it reaches the exit, the path rebuilt backwards is the shortest
-one. We first had a depth-first solver, but in a maze with loops DFS finds
-*a* path, not always the *shortest* one, so we changed it to BFS.
-
-# Reusable code
-
-The maze generator and solver are in the `mazegen` package, which can be
-installed in any other project. It does not depend on the configuration
-file or on the display.
-
-| File | Content |
-|---|---|
-| `mazegen/__init__.py` | Exposes `MazeGenerator`, `solve_bfs` and `pattern_cells` |
-| `mazegen/generator.py` | `MazeGenerator` class |
-| `mazegen/solver.py` | `solve_bfs`, the shortest path |
-| `mazegen/pattern.py` | The "42" shape and its position |
-| `mazegen/README.md` | Documentation of the package |
-
-Build the package:
-
-```
-make build
-```
-
-The `.whl` file includes the code, the documentation (`mazegen/README.md`)
-and the license.
-
-Install it:
-
-```
-pip install mazegen-1.0.0-py3-none-any.whl
-```
-
-Use it:
+Basic usage example:
 
 ```python
 from mazegen import MazeGenerator, solve_bfs
 
 generator = MazeGenerator(height=15, width=20, perfect=True, seed=42)
-maze = generator.generate()      # list of rows; each cell is 0-15
-path = solve_bfs(generator, (0, 0), (14, 19))  # list of (row, col) cells
+maze = generator.generate()          # maze[row][col], value 0..15
+path = solve_bfs(generator, (0, 0), (14, 19))  # list of (row, col) or None
+print(maze[0][0], path)
 ```
 
-Parameters: `height` and `width` (size in cells), `perfect` (`True` or
-`False`) and `seed` (optional; `None` gives a different maze every time).
+Custom parameters:
 
-Inside the package, coordinates are `(row, col)`. The configuration file
-uses `x,y` (column, row); the conversion is done once in `a_maze_ing.py`.
+- `height` and `width`: grid dimensions.
+- `perfect`: `True` for a perfect maze, `False` for Pac-Man mode.
+- `seed`: optional integer; the same value always produces the same maze. If it is `None`, generation is random.
 
-# Team and project management
+Access to the structure and the solution:
 
-## Roles
+- `generator.maze` (or the value returned by `generate()`) is a `maze[row][col]` matrix; each value is a bitmask of closed walls (for example, `15` is a fully closed cell).
+- `solve_bfs(generator, start, end)` returns the list of `(row, col)` cells of the shortest path, including both endpoints, or `None` if no route exists.
+- `pattern_cells(height, width)` returns the cells occupied by the "42" pattern, or `None` if the maze is too small.
 
-- **aliao-tr**: maze generator (`mazegen/generator.py`), first solver,
-  Pac-Man mode, seed in the generator, package interface
-  (`mazegen/__init__.py`), first version of the Makefile.
-- **plopez-l**: configuration parsing and validation (`config_parser.py`),
-  error handling, main program (`a_maze_ing.py`), output file
-  (`output_writer.py`), terminal display and menu (`display.py`), BFS solver,
-  "42" pattern (`mazegen/pattern.py`), packaging (`pyproject.toml`) and
-  README.
+All coordinates in this package use `(row, col)`. The output file format is different: it uses one hexadecimal digit per cell per line and `(x, y)` coordinates, and is produced in `output_writer.py`.
 
-## Planning
+To rebuild and install the package:
 
-We started by reading the subject together and splitting it into
-independent modules with clear inputs and outputs: config → generator →
-solver → output file → display. Each of us took a group of modules, and we
-used a shared GitHub repository to put them together.
+```bash
+make build
+pip install mazegen-1.0.0-py3-none-any.whl
+```
 
-How the plan changed:
+The MIT licence in `LICENSE.md` allows this generator to be reused, modified and distributed in later projects.
 
-- When we connected the modules we found that the generator and the rest of
-  the code used coordinates in a different order. We agreed to use
-  `(row, col)` everywhere inside the program and convert from `x,y` only
-  when reading the config and writing the output file.
-- We found a bug where the grid was built by columns instead of by rows. We
-  wrote the needed changes in a shared note and fixed it.
-- We replaced the DFS solver with BFS to always get the shortest path.
-- The `make lint` rule was checking the virtual environment too, so we
-  excluded `.venv`.
-- Testing every kind of wrong configuration file showed some error messages
-  that were hard to read, so we made them clearer, and we added checks for
-  repeated keys, lowercase keys, a maximum size and an entry or exit inside
-  the "42".
-- When the seed was added to the generator, option 1 of the menu started
-  showing always the same maze. We fixed it with a second random generator,
-  created from the same seed, that gives a new seed to each regenerated
-  maze.
-- Pressing `Ctrl+D` in the menu made the program crash, so we handle it like
-  `Ctrl+C`.
+## Resources
 
-## What worked well and what could be improved
+Classic references and documentation consulted on the topic:
 
-- **Worked well**: small modules with clear interfaces, so each one could be
-  tested on its own; Pydantic for validation, which gave clear error
-  messages with little code; checking every change with `make lint`; testing
-  the output with `maze_analyzer.py`.
-- **Could be improved**: agreeing on conventions (like the coordinate order)
-  at the very beginning, writing more descriptive commit messages, running
-  the linters before every commit instead of after, and telling each other
-  before editing the same file.
+- [Maze generation algorithms (Wikipedia)](https://en.wikipedia.org/wiki/Maze_generation_algorithm): overview of DFS, Prim, Kruskal, etc.
+- [Depth-first search (Wikipedia)](https://en.wikipedia.org/wiki/Depth-first_search): basis of the *recursive backtracker* used here.
+- [Breadth-first search (Wikipedia)](https://en.wikipedia.org/wiki/Breadth-first_search): justification for computing the shortest path.
+- [Random — Python documentation](https://docs.python.org/3/library/random.html): use of an isolated `random.Random` for seed-based reproducibility.
+- [PEP 257 — Docstring Conventions](https://peps.python.org/pep-0257/): docstring style for functions and classes.
+- [typing / mypy](https://mypy.readthedocs.io/) and [flake8](https://flake8.pycqa.org/): type annotations and style checking.
+- [Pydantic](https://docs.pydantic.dev/): declarative validation of the configuration file.
+- [Packaging Python Projects](https://packaging.python.org/en/latest/tutorials/packaging-projects/) and [setuptools](https://setuptools.pypa.io/): building the `mazegen` package.
+- `maze_analyzer.py` (included with the subject): verification of wall consistency, perfect/Pac-Man mode and dead ends.
 
-## Tools
+**AI usage:** AI was used as support for drafting and structuring documentation (including this README), reviewing docstrings, suggesting style and type checks, and clarifying packaging and algorithm concepts. All generated or suggested code was read, tested and understood by the team, and design decisions were reviewed by both members before being included. Understanding of the generator's logic and the defensibility of the project was never delegated to AI.
 
-Git and GitHub, VS Code, vim, `flake8`, `mypy`, Pydantic, `pdb`, `build`,
-and the `maze_analyzer.py` script from the subject to check the generated
-mazes.
+## Team and project management
 
-# Resources
+**Team:** aliao-tr and plopez-l.
 
-- [Python documentation](https://docs.python.org/3/) (`random`, `typing`,
-  `sys`)
-- [Pydantic documentation](https://docs.pydantic.dev/latest/)
-- [Maze generation algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Maze_generation_algorithm)
-- [Maze generation: recursive backtracking (Jamis Buck)](https://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking)
-- [Breadth-first search (Wikipedia)](https://en.wikipedia.org/wiki/Breadth-first_search)
-- [ANSI escape codes (Wikipedia)](https://en.wikipedia.org/wiki/ANSI_escape_code)
-- [Python Packaging User Guide](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
-- [mypy documentation](https://mypy.readthedocs.io/) and
-  [flake8 documentation](https://flake8.pycqa.org/)
+### Roles
 
-## Use of AI
+- **aliao-tr**: design and implementation of the generator (`mazegen/generator.py`, `pattern.py`, `solver.py`) and of the seed-based reproducibility logic.
+- **plopez-l**: configuration parsing and validation (`config_parser.py`), output file writing (`output_writer.py`), display and menu (`display.py`) and packaging (`pyproject.toml`, `Makefile`).
+- **Both**: integration in `a_maze_ing.py`, manual testing with `maze_analyzer.py`, review of `flake8`/`mypy`, documentation and defense preparation.
 
-We used an AI assistant (Claude, by Anthropic) as a study and review tool
-during the project:
+### Planning
 
-- **Understanding**: explaining the subject, and concepts such as Pydantic
-  validation, walls stored as bits, hexadecimal output, BFS vs DFS, ANSI
-  colour codes, Makefiles, virtual environments and Python packaging.
-- **Reviewing and debugging**: reading our code, explaining `flake8` and
-  `mypy` errors, and helping find bugs such as the coordinate mix-up, the
-  grid built by columns, the seed repeating the same maze and the `Ctrl+D`
-  crash.
-- **Testing**: suggesting wrong configuration files to try, and checking
-  the results with `maze_analyzer.py`.
-- **Code suggestions**: proposing implementations, step by step, for parts
-  such as the config validation, the output writer, the terminal display and
-  menu, the "42" pattern and the packaging files. We read, adapted, tested
-  and integrated them ourselves.
-- **Documentation**: helping write the docstrings and this README.
+The initial plan was to build a minimal perfect generator first and then add the configuration layer, hexadecimal output and display. During development the scope grew to include strict validation with Pydantic, an optional seed, control of fully open `3x3` areas, dead-end reduction, a menu with wall and path colours, and packaging as a wheel. The "42" pattern was integrated from the start as closed cells that the DFS treats as already visited.
 
-Every change was reviewed and tested by us before being committed, and we
-can explain all the code in the project.
+### What worked well and what could be improved
+
+- Worked well: separating generation from the rest of the program made the package reusable and allowed both modes to be tested with the analyzer; automatic style and type checks caught errors before the defense.
+- Could be improved: add formal unit tests with `pytest`, simplify the `3x3` area check (it currently copies the matrix for every candidate wall) and explore the bonuses for multiple algorithms or generation animation.
+
+### Tools
+
+Git, virtual environments, `make`, `flake8`, `mypy`, `pydantic`, `build`, `maze_analyzer.py`, the ASCII menu with ANSI escape codes and AI assistants for documentation and review.
+
+## License
+
+This project is distributed under the MIT licence. See [`LICENSE.md`](LICENSE.md) for the full terms.

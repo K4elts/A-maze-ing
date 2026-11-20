@@ -226,14 +226,18 @@ class MazeGenerator:
 
     def reduce_dead_ends(self, max_dead_ends: int = 2) -> None:
         """
-        Reduces the number of dead ends in the maze by randomly removing
-        walls adjacent to cells with only one open passage.
+        Reduces the number of dead ends in the maze by removing selected walls
+        adjacent to dead-end cells, creating alternative passages.
 
-        Repeatedly identifies dead-end cells, excluding those belonging to
-        the predefined pattern, and randomly selects a wall separating one
-        of them from an adjacent cell. The selected wall is removed to create
-        an alternative passage. The process continues until the number of
-        dead ends reaches the specified maximum or no valid candidates remain.
+        The method repeatedly searches for dead-end cells that do not belong to
+        the predefined pattern and identifies adjacent cells separated by a
+        wall.
+        Candidates are randomly shuffled, and the first wall whose removal does
+        not create an excessively large open space is removed. Both cells are
+        updated to maintain wall consistency between neighbouring cells.
+
+        The process continues until the number of dead ends is less than or
+        equal to the specified maximum, or no valid wall removals are possible.
 
         Args:
             max_dead_ends (int): Maximum number of dead ends allowed in the
