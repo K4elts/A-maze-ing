@@ -25,6 +25,13 @@ OPPOSITE = {
 
 
 class MazeGenerator:
+    """
+    Generates a maze as a grid of cells, each one a bitmask of closed walls.
+
+    Uses a randomized depth-first search; in Pac-Man mode (perfect=False)
+    it then adds loops and removes dead ends without creating 3x3 open areas.
+    """
+
     def __init__(
             self,
             height: int,
@@ -32,6 +39,15 @@ class MazeGenerator:
             perfect: bool,
             seed: int | None = None
     ):
+        """
+        Creates a grid of the given size with all the walls closed.
+
+        Args:
+            height (int): Number of rows.
+            width (int): Number of columns.
+            perfect (bool): True for a perfect maze, False for Pac-Man mode.
+            seed (int | None): Random seed; None gives a random maze.
+        """
         self.height: int = height
         self.width: int = width
         self.perfect: bool = perfect
