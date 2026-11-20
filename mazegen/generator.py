@@ -94,7 +94,7 @@ class MazeGenerator:
                 stack.pop()
 
         if not self.perfect:
-            self.remove_extra_walls()
+            #self.remove_extra_walls()
             self.reduce_dead_ends(2)
 
         return self.maze
@@ -269,6 +269,9 @@ class MazeGenerator:
                                 and self.maze[row][col] & direction
                                 and (neighbour_row, neighbour_col) not in
                                 self.pattern
+                                and not self.creates_large_open_space(
+                                    row, col, direction
+                                )
                             ):
                                 candidates.append(
                                     (
