@@ -3,7 +3,7 @@ from pydantic import (
     BaseModel, ConfigDict, Field, ValidationError, field_validator,
     model_validator
 )
-from mazegen.pattern import pattern_cells
+from mazegen import pattern_cells
 
 
 class MazeParameters(BaseModel):
